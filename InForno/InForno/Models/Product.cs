@@ -23,9 +23,11 @@ namespace InForno.Models
         public string DeliveryTime { get; set; }
 
         [Required]
-        public byte[] ProductImage { get; set; }
+        public List<Ingredient> Ingredients { get; set; }
 
         [Required]
-        public List<Ingredient> Ingredients { get; set; }
+        public byte[] ProductImage { get; set; }
+
+        public string ProductImageUrl => ProductImage != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(ProductImage)}" : null;
     }
 }
