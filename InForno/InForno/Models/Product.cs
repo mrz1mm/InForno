@@ -23,7 +23,7 @@ namespace InForno.Models
         public string DeliveryTime { get; set; }
 
         [Required]
-        public List<Image> Images { get; set; }
+        public byte[] ProductImage { get; set; }
 
         [Required]
         public List<Ingredient> Ingredients { get; set; }
