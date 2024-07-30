@@ -5,7 +5,7 @@ namespace InForno.Models
 {
     public class Order
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int CheckoutId { get; set; }
 
         [Required]

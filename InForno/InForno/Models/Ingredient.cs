@@ -5,7 +5,7 @@ namespace InForno.Models
 {
     public class Ingredient
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int IngredientId { get; set; }
 
         [Required]

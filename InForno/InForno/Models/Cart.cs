@@ -5,7 +5,7 @@ namespace InForno.Models
 {
     public class Cart
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int OrderId { get; set; }
         public Product Product { get; set; }
         public int Quantity { get; set; }        

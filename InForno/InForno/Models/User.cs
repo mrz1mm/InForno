@@ -5,7 +5,7 @@ namespace InForno.Models
 {
     public class User
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int UserId { get; set; }
 
         [Required]
