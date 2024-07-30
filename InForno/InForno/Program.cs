@@ -1,4 +1,6 @@
+using InForno.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace InForno
@@ -29,6 +31,11 @@ namespace InForno
                         context.User.HasClaim(c =>
                             (c.Type == ClaimTypes.Role && c.Value == "Supplier") ||
                             (c.Type == ClaimTypes.Role && c.Value == "Customer"))));
+            });
+
+            builder.Services.AddDbContext<InFornoDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             var app = builder.Build();
