@@ -30,7 +30,8 @@ namespace InForno.Controllers
 
         // METODI
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterDTO model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register([Bind("Username, Password, Role")] RegisterDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -51,7 +52,7 @@ namespace InForno.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("Username,Password")] LoginDTO model)
+        public async Task<IActionResult> Login([Bind("Username, Password")] LoginDTO model)
         {
             if (!ModelState.IsValid)
             {
