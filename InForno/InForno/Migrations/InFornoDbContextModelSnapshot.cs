@@ -46,33 +46,6 @@ namespace InForno.Migrations
                     b.ToTable("Checkouts");
                 });
 
-            modelBuilder.Entity("InForno.Models.Image", b =>
-                {
-                    b.Property<int>("ImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("IngredientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ImageId");
-
-                    b.HasIndex("IngredientId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Images");
-                });
-
             modelBuilder.Entity("InForno.Models.Ingredient", b =>
                 {
                     b.Property<int>("IngredientId")
@@ -149,6 +122,10 @@ namespace InForno.Migrations
                         .HasPrecision(2)
                         .HasColumnType("decimal(2,2)");
 
+                    b.Property<byte[]>("ProductImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
@@ -196,17 +173,6 @@ namespace InForno.Migrations
                     b.ToTable("IngredientProduct");
                 });
 
-            modelBuilder.Entity("InForno.Models.Image", b =>
-                {
-                    b.HasOne("InForno.Models.Ingredient", null)
-                        .WithMany("Images")
-                        .HasForeignKey("IngredientId");
-
-                    b.HasOne("InForno.Models.Product", null)
-                        .WithMany("Images")
-                        .HasForeignKey("ProductId");
-                });
-
             modelBuilder.Entity("InForno.Models.Order", b =>
                 {
                     b.HasOne("InForno.Models.Checkout", null)
@@ -248,16 +214,6 @@ namespace InForno.Migrations
             modelBuilder.Entity("InForno.Models.Checkout", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("InForno.Models.Ingredient", b =>
-                {
-                    b.Navigation("Images");
-                });
-
-            modelBuilder.Entity("InForno.Models.Product", b =>
-                {
-                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

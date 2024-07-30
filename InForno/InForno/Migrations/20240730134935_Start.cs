@@ -49,7 +49,8 @@ namespace InForno.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(2,2)", precision: 2, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DeliveryTime = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    DeliveryTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,31 +70,6 @@ namespace InForno.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    ImageId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IngredientId = table.Column<int>(type: "int", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.ImageId);
-                    table.ForeignKey(
-                        name: "FK_Images_Ingredients_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredients",
-                        principalColumn: "IngredientId");
-                    table.ForeignKey(
-                        name: "FK_Images_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "ProductId");
                 });
 
             migrationBuilder.CreateTable(
@@ -154,16 +130,6 @@ namespace InForno.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_IngredientId",
-                table: "Images",
-                column: "IngredientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Images_ProductId",
-                table: "Images",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_IngredientProduct_ProductsProductId",
                 table: "IngredientProduct",
                 column: "ProductsProductId");
@@ -187,9 +153,6 @@ namespace InForno.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Images");
-
             migrationBuilder.DropTable(
                 name: "IngredientProduct");
 
