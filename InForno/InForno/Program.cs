@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+
 namespace InForno
 {
     public class Program
@@ -6,16 +9,33 @@ namespace InForno
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Auth/Login";
+                options.AccessDeniedPath = "/Home";
+            });
+
+            builder.Services
+            .AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.Supplier, policy => policy.RequireRole("Admin"));
+                options.AddPolicy(Policies.Customer, policy => policy.RequireRole("User"));
+                options.AddPolicy("SupllierOrCustomer", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c =>
+                            (c.Type == ClaimTypes.Role && c.Value == "User") ||
+                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+            });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
