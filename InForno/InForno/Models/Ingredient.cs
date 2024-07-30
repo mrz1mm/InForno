@@ -13,7 +13,5 @@ namespace InForno.Models
 
         [Required]
         public string Description { get; set; }
-
-        public List<Product> Products { get; set; }
     }
 }

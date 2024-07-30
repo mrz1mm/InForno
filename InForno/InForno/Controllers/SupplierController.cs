@@ -1,6 +1,7 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InForno.Controllers
 {
@@ -13,21 +14,59 @@ namespace InForno.Controllers
         }
 
 
-        // VISTE
-        public IActionResult Orders()
+        // VISTE - Orders
+        public async Task<IActionResult> Orders()
+        {
+             return View();
+        }
+
+
+        // VISTE - Products
+        public async Task<IActionResult> Products()
+        {
+            var products = await _context.Products.Include(c => c.Ingredients).ToListAsync();
+            return View();
+        }
+
+        public IActionResult AddProduct()
         {
             return View();
         }
 
-        public IActionResult Products()
+        public IActionResult UpdateProduct()
         {
             return View();
         }
 
-        public IActionResult Ingredients()
+        public IActionResult DeleteProduct()
         {
             return View();
         }
+
+
+        // VISTE - Ingredients
+        public async Task<IActionResult> Ingredients()
+        {
+            var ingredients = await _context.Ingredients.ToListAsync();
+            return View();
+        }
+
+        public IActionResult AddIngredient()
+        {
+            return View();
+        }
+
+        public IActionResult UpdateIngredient() {
+            return View();
+        }
+
+        public IActionResult DeleteIngredient()
+        {
+            return View();
+        }
+
+
+        // METODI - Orders
 
 
         // METODI - Products
