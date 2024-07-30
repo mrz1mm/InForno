@@ -22,13 +22,13 @@ namespace InForno
             builder.Services
             .AddAuthorization(options =>
             {
-                options.AddPolicy(Policies.Supplier, policy => policy.RequireRole("Admin"));
-                options.AddPolicy(Policies.Customer, policy => policy.RequireRole("User"));
+                options.AddPolicy(Policies.Supplier, policy => policy.RequireRole("Supplier"));
+                options.AddPolicy(Policies.Customer, policy => policy.RequireRole("Customer"));
                 options.AddPolicy("SupllierOrCustomer", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            (c.Type == ClaimTypes.Role && c.Value == "User") ||
-                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                            (c.Type == ClaimTypes.Role && c.Value == "Supplier") ||
+                            (c.Type == ClaimTypes.Role && c.Value == "Customer"))));
             });
 
             var app = builder.Build();
