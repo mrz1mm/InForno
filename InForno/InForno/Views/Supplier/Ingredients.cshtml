@@ -29,8 +29,8 @@ else
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        <a asp-action="UpdateIngredient" asp-route-id="@item.IngredientId">Update  |</a>
-                        <a asp-action="DeleteIngredient" asp-route-id="@item.IngredientId">Delete</a>
+                        <a asp-action="UpdateIngredientView" asp-route-id="@item.IngredientId">Update  |</a>
+                        <a asp-action="DeleteIngredientView" asp-route-id="@item.IngredientId">Delete</a>
                     </td>
                 </tr>
             }

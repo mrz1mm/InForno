@@ -27,19 +27,8 @@
                                 Auth
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Products
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Products">Products</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddProduct">AddProduct</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="UpdateProduct">UpdateProduct</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="DeleteProduct">DeleteProduct</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="LoginView">Login</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="RegisterView">Register</a></li>
                             </ul>
                         </div>
                         <div class="dropdown">
@@ -47,12 +36,20 @@
                                 Ingredients
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Ingredients">Ingredients</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddIngredient">AddIngredient</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="UpdateIngredient">UpdateIngredient</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="DeleteIngredient">DeleteIngredient</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="IngredientsView">Ingredients</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddIngredientView">AddIngredient</a></li>
                             </ul>
                         </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Products
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="ProductsView">Products</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddProductView">AddProduct</a></li>
+                            </ul>
+                        </div>
+
 
 
 
