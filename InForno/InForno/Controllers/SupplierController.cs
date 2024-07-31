@@ -1,35 +1,43 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
+using InForno.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InForno.Controllers
 {
     public class SupplierController : Controller
     {
         private readonly InFornoDbContext _context;
-        public SupplierController(InFornoDbContext context)
+        private readonly ProductSvc _productSvc;
+        private readonly IngredientSvc _ingredientSvc;
+
+        public SupplierController(InFornoDbContext context, ProductSvc productSvc, IngredientSvc ingredientSvc)
         {
             _context = context;
+            _productSvc = productSvc;
+            _ingredientSvc = ingredientSvc;
         }
 
 
         // VISTE - Orders
         public async Task<IActionResult> Orders()
         {
-             return View();
+            return View();
         }
 
 
         // VISTE - Products
         public async Task<IActionResult> Products()
         {
-            var products = await _context.Products.Include(c => c.Ingredients).ToListAsync();
+            var products = await _productSvc.GetAllProductsAsync();
             return View(products);
         }
 
-        public IActionResult AddProduct()
+        public async Task<IActionResult> AddProduct()
         {
+            var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
+            ViewBag.Ingredients = new SelectList(ingredients, "IngredientId", "Name");
             return View();
         }
 
@@ -48,7 +56,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> Ingredients()
         {
-            var ingredients = await _context.Ingredients.ToListAsync();
+            var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
             return View(ingredients);
         }
 
@@ -60,13 +68,13 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateIngredient(int id)
         {
-            var ingredient = await _context.Ingredients.FindAsync(id);
+            var ingredient = await _ingredientSvc.GetIngredientByIdAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            var model = new IngredientDTO
+            var model = new UpdateIngredientDTO
             {
                 IngredientId = ingredient.IngredientId,
                 Name = ingredient.Name
@@ -78,13 +86,13 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
-            var ingredient = await _context.Ingredients.FindAsync(id);
+            var ingredient = await _ingredientSvc.GetIngredientByIdAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            var model = new IngredientDTO
+            var model = new UpdateIngredientDTO
             {
                 IngredientId = ingredient.IngredientId,
                 Name = ingredient.Name
@@ -96,10 +104,12 @@ namespace InForno.Controllers
 
         // METODI - Orders
 
+
+
         // METODI - Products
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProduct([Bind("Name, Price, Description, DeliveryTime, ProductImage, Ingredients")] ProductDTO model)
+        public async Task<IActionResult> AddProduct([Bind("Name, Price, Description, DeliveryTime, ProductImageFile, Ingredients")] AddProductDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -108,32 +118,7 @@ namespace InForno.Controllers
 
             try
             {
-                var product = new Product
-                {
-                    Name = model.Name,
-                    Price = model.Price,
-                    Description = model.Description,
-                    DeliveryTime = model.DeliveryTime,
-                    ProductImage = model.ProductImage,
-                    Ingredients = new List<Ingredient>()
-                };
-
-                // Associa gli ingredienti al prodotto
-                if (model.Ingredients != null && model.Ingredients.Any())
-                {
-                    product.Ingredients = new List<Ingredient>();
-                    foreach (var ingredient in model.Ingredients)
-                    {
-                        var existingIngredient = await _context.Ingredients.FindAsync(ingredient.IngredientId);
-                        if (existingIngredient != null)
-                        {
-                            product.Ingredients.Add(existingIngredient);
-                        }
-                    }
-                }
-
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
+                await _productSvc.AddProductAsync(model);
                 return RedirectToAction("Products");
             }
             catch (Exception ex)
@@ -142,7 +127,6 @@ namespace InForno.Controllers
                 return View(model);
             }
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -155,18 +139,7 @@ namespace InForno.Controllers
 
             try
             {
-                var product = new Product
-                {
-                    Name = model.Name,
-                    Price = model.Price,
-                    Description = model.Description,
-                    DeliveryTime = model.DeliveryTime,
-                    ProductImage = model.ProductImage,
-                    Ingredients = model.Ingredients
-                };
-
-                _context.Products.Update(product);
-                await _context.SaveChangesAsync();
+                await _productSvc.UpdateProductAsync(model);
                 return RedirectToAction("Products");
             }
             catch (Exception ex)
@@ -187,13 +160,11 @@ namespace InForno.Controllers
 
             try
             {
-                var product = new Product
+                var success = await _productSvc.DeleteProductAsync(model.ProductId);
+                if (!success)
                 {
-                    ProductId = model.ProductId
-                };
-
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                    return NotFound();
+                }
                 return RedirectToAction("Products");
             }
             catch (Exception ex)
@@ -202,7 +173,6 @@ namespace InForno.Controllers
                 return View(model);
             }
         }
-
 
 
         // METODI - Ingredients
@@ -217,13 +187,7 @@ namespace InForno.Controllers
 
             try
             {
-                var ingredient = new Ingredient
-                {
-                    Name = model.Name,
-                };
-
-                _context.Ingredients.Add(ingredient);
-                await _context.SaveChangesAsync();
+                await _ingredientSvc.AddIngredientAsync(model);
                 return RedirectToAction("Ingredients");
             }
             catch (Exception ex)
@@ -235,7 +199,7 @@ namespace InForno.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateIngredient([Bind("IngredientId, Name")] IngredientDTO model)
+        public async Task<IActionResult> UpdateIngredient([Bind("IngredientId, Name")] UpdateIngredientDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -244,14 +208,7 @@ namespace InForno.Controllers
 
             try
             {
-                var ingredient = new Ingredient
-                {
-                    IngredientId = model.IngredientId,
-                    Name = model.Name,
-                };
-
-                _context.Ingredients.Update(ingredient);
-                await _context.SaveChangesAsync();
+                await _ingredientSvc.UpdateIngredientAsync(model);
                 return RedirectToAction("Ingredients");
             }
             catch (Exception)
@@ -272,14 +229,11 @@ namespace InForno.Controllers
 
             try
             {
-                var ingredient = await _context.Ingredients.FindAsync(ingredientId);
-                if (ingredient == null)
+                var success = await _ingredientSvc.DeleteIngredientAsync(ingredientId);
+                if (!success)
                 {
                     return NotFound();
                 }
-
-                _context.Ingredients.Remove(ingredient);
-                await _context.SaveChangesAsync();
                 return RedirectToAction("Ingredients");
             }
             catch (Exception)

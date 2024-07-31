@@ -1,4 +1,6 @@
 using InForno.Models;
+using InForno.Services;
+using InForno.Svc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -45,6 +47,11 @@ namespace InForno
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddSingleton<ImageSvc>(new ImageSvc(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")));
+            builder.Services
+                .AddScoped<IngredientSvc>()
+                .AddScoped<ProductSvc>();
 
             var app = builder.Build();
 
