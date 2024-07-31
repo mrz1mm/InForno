@@ -1,0 +1,65 @@
+﻿@model InForno.Models.DTO.UpdateProductDTO
+
+@{
+    ViewData["Title"] = "Elimina Prodotto";
+}
+
+<h1>Elimina Prodotto</h1>
+
+<h3>Sei sicuro di voler eliminare questo prodotto?</h3>
+<div>
+    <h4>Prodotto</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DeliveryTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DeliveryTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductImageUrl)
+        </dt>
+        <dd class="col-sm-10">
+            <img src="@Model.ProductImageUrl" alt="Product Image" style="max-width: 200px;" />
+        </dd>
+        <dt class="col-sm-2">
+            Ingredienti
+        </dt>
+        <dd class="col-sm-10">
+            <ul>
+                @foreach (var ingredient in (List<SelectListItem>)ViewData["Ingredients"])
+                {
+                    if (ingredient.Selected)
+                    {
+                        <li>@ingredient.Text</li>
+                    }
+                }
+            </ul>
+        </dd>
+    </dl>
+
+    <form asp-action="ConfirmDeleteProduct" method="post">
+        <input type="hidden" asp-for="ProductId" />
+        <input type="submit" value="Elimina" class="btn btn-danger" /> |
+        <a asp-action="Products" class="btn btn-secondary">Annulla</a>
+    </form>
+</div>

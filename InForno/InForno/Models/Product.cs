@@ -12,7 +12,7 @@ namespace InForno.Models
         public string Name { get; set; }
 
         [Required]
-        [Precision(2)]
+        [Precision(10, 2)]
         public decimal Price { get; set; }
 
         [Required]

@@ -8,11 +8,13 @@ namespace InForno.Services
     {
         private readonly InFornoDbContext _context;
         private readonly ImageSvc _imageSvc;
+        private readonly IngredientSvc _ingredientSvc;
 
-        public ProductSvc(InFornoDbContext context, ImageSvc imageSvc)
+        public ProductSvc(InFornoDbContext context, ImageSvc imageSvc, IngredientSvc ingredientSvc)
         {
             _context = context;
             _imageSvc = imageSvc;
+            _ingredientSvc = ingredientSvc;
         }
 
         public async Task<List<Product>> GetAllProductsAsync()
@@ -25,29 +27,31 @@ namespace InForno.Services
             return await _context.Products.Include(p => p.Ingredients).FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
-        public async Task<Product> AddProductAsync(AddProductDTO model)
+        public async Task AddProductAsync(AddProductDTO model)
         {
-            if (model.DeliveryTime < TimeSpan.Zero || model.DeliveryTime >= TimeSpan.FromHours(24))
-            {
-                throw new ArgumentException("Il valore di DeliveryTime è fuori dal range accettabile.");
-            }
-
-            var imageUrl = await _imageSvc.SaveImageAsync(model.ProductImageFile);
-
             var product = new Product
             {
                 Name = model.Name,
                 Price = model.Price,
                 Description = model.Description,
                 DeliveryTime = model.DeliveryTime,
-                ProductImageUrl = imageUrl,
-                Ingredients = model.Ingredients.Select(i => new Ingredient { IngredientId = i }).ToList()
+                ProductImageUrl = model.ProductImageFile != null ? await _imageSvc.SaveImageAsync(model.ProductImageFile) : null,
+                Ingredients = new List<Ingredient>()
             };
+
+            if (model.Ingredients != null && model.Ingredients.Any())
+            {
+                var selectedIngredients = await _ingredientSvc.GetIngredientsByIdsAsync(model.Ingredients);
+                product.Ingredients.AddRange(selectedIngredients);
+            }
+
+            if (product.DeliveryTime < TimeSpan.Zero || product.DeliveryTime >= TimeSpan.FromHours(24))
+            {
+                throw new ArgumentException("Il valore di DeliveryTime è fuori dal range accettabile.");
+            }
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-
-            return product;
         }
 
         public async Task<Product> UpdateProductAsync(Product product)

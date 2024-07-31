@@ -28,12 +28,14 @@ namespace InForno.Controllers
 
 
         // VISTE - Products
+        [HttpGet]
         public async Task<IActionResult> Products()
         {
             var products = await _productSvc.GetAllProductsAsync();
             return View(products);
         }
 
+        [HttpGet]
         public async Task<IActionResult> AddProduct()
         {
             var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
@@ -43,14 +45,84 @@ namespace InForno.Controllers
             return View(model);
         }
 
-        public IActionResult UpdateProduct()
-        {
-            return View();
+        [HttpGet]
+        public async Task<IActionResult> ProductDetail(int id)
+            {
+            var product = await _productSvc.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
-        public IActionResult DeleteProduct()
+        public async Task<IActionResult> UpdateProduct(int id)
         {
-            return View();
+            var product = await _productSvc.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateProductDTO
+            {
+                ProductId = product.ProductId,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                DeliveryTime = product.DeliveryTime,
+                ProductImageUrl = product.ProductImageUrl,
+                Ingredients = product.Ingredients.Select(i => i.IngredientId).ToList()
+            };
+
+            var allIngredients = await _ingredientSvc.GetAllIngredientsAsync();
+            ViewData["Ingredients"] = allIngredients.Select(i => new SelectListItem
+            {
+                Value = i.IngredientId.ToString(),
+                Text = i.Name,
+                Selected = model.Ingredients.Contains(i.IngredientId)
+            }).ToList();
+
+            // Log for debugging
+            System.Diagnostics.Debug.WriteLine("Model Ingredients: " + string.Join(", ", model.Ingredients));
+            foreach (var item in (List<SelectListItem>)ViewData["Ingredients"])
+            {
+                System.Diagnostics.Debug.WriteLine($"Ingredient: {item.Text}, Selected: {item.Selected}");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _productSvc.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateProductDTO
+            {
+                ProductId = product.ProductId,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                DeliveryTime = product.DeliveryTime,
+                ProductImageUrl = product.ProductImageUrl,
+                Ingredients = product.Ingredients.Select(i => i.IngredientId).ToList()
+            };
+
+            var allIngredients = await _ingredientSvc.GetAllIngredientsAsync();
+            ViewData["Ingredients"] = allIngredients.Select(i => new SelectListItem
+            {
+                Value = i.IngredientId.ToString(),
+                Text = i.Name,
+                Selected = model.Ingredients.Contains(i.IngredientId)
+            }).ToList();
+
+            return View(model);
         }
 
 
@@ -222,7 +294,7 @@ namespace InForno.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmDeleteIngredient(int ingredientId)
+        public async Task<IActionResult> ConfirmDeleteProduct(int productId)
         {
             if (!ModelState.IsValid)
             {
@@ -231,16 +303,16 @@ namespace InForno.Controllers
 
             try
             {
-                var success = await _ingredientSvc.DeleteIngredientAsync(ingredientId);
+                var success = await _productSvc.DeleteProductAsync(productId);
                 if (!success)
                 {
                     return NotFound();
                 }
-                return RedirectToAction("Ingredients");
+                return RedirectToAction("Products");
             }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'eliminazione dell'ingrediente.");
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'eliminazione del prodotto.");
                 return View();
             }
         }

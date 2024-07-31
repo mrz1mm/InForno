@@ -23,6 +23,13 @@ namespace InForno.Services
             return await _context.Ingredients.FindAsync(id);
         }
 
+        public async Task<List<Ingredient>> GetIngredientsByIdsAsync(List<int> ingredientIds)
+        {
+            return await _context.Ingredients
+                .Where(i => ingredientIds.Contains(i.IngredientId))
+                .ToListAsync();
+        }
+
         public async Task<Ingredient> AddIngredientAsync(AddIngredientDTO model)
         {
             var ingredient = new Ingredient
