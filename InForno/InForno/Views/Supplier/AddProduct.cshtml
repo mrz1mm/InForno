@@ -19,7 +19,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
+                <input asp-for="Price" value="@Model.Price.ToString("N2", System.Globalization.CultureInfo.InvariantCulture)" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="DeliveryTime" class="control-label"></label>
-                <input asp-for="DeliveryTime" type="text" class="form-control" placeholder="hh:mm:ss" />
+                <input asp-for="DeliveryTime" type="time" class="form-control" value="00:00" />
                 <span asp-validation-for="DeliveryTime" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -37,17 +37,22 @@
                 <input asp-for="ProductImageFile" type="file" class="form-control" />
                 <span asp-validation-for="ProductImageFile" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label class="control-label">Ingredients</label>
-                @foreach (var ingredient in ViewBag.Ingredients)
+                @if (ViewBag.Ingredients != null)
                 {
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="Ingredients" value="@ingredient.Value" />
-                        <label class="form-check-label">@ingredient.Text</label>
-                    </div>
+                    @foreach (var ingredient in ViewBag.Ingredients)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="Ingredients" value="@ingredient.Value" />
+                            <label class="form-check-label">@ingredient.Text</label>
+                        </div>
+                    }
                 }
                 <span asp-validation-for="Ingredients" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

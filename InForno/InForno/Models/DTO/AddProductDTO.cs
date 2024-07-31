@@ -7,7 +7,6 @@
         public string Description { get; set; }
         public TimeSpan DeliveryTime { get; set; }
         public IFormFile ProductImageFile { get; set; }
-        public string ProductImageUrl { get; set; }
         public List<int> Ingredients { get; set; }
     }
 }

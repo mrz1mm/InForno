@@ -1,6 +1,5 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
-using InForno.Svc;
 using Microsoft.EntityFrameworkCore;
 
 namespace InForno.Services
@@ -28,6 +27,11 @@ namespace InForno.Services
 
         public async Task<Product> AddProductAsync(AddProductDTO model)
         {
+            if (model.DeliveryTime < TimeSpan.Zero || model.DeliveryTime >= TimeSpan.FromHours(24))
+            {
+                throw new ArgumentException("Il valore di DeliveryTime è fuori dal range accettabile.");
+            }
+
             var imageUrl = await _imageSvc.SaveImageAsync(model.ProductImageFile);
 
             var product = new Product

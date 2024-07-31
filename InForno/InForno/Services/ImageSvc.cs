@@ -1,35 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace InForno.Svc
+﻿namespace InForno.Services
 {
     public class ImageSvc
     {
-        private readonly string _imageDirectory;
+        private readonly string _imagePath;
 
-        public ImageSvc(string imageDirectory)
+        public ImageSvc(string imagePath)
         {
-            _imageDirectory = imageDirectory;
+            _imagePath = imagePath;
         }
 
         public async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0)
             {
-                throw new ArgumentException("File non valido", nameof(imageFile));
+                throw new ArgumentException("File immagine non valido");
             }
 
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-            var filePath = Path.Combine(_imageDirectory, fileName);
+            var filePath = Path.Combine(_imagePath, imageFile.FileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await imageFile.CopyToAsync(stream);
             }
 
-            return $"/images/{fileName}";
+            return $"/images/{imageFile.FileName}";
         }
     }
 }

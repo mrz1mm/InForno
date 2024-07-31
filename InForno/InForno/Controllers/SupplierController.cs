@@ -38,7 +38,9 @@ namespace InForno.Controllers
         {
             var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
             ViewBag.Ingredients = new SelectList(ingredients, "IngredientId", "Name");
-            return View();
+
+            var model = new AddProductDTO();
+            return View(model);
         }
 
         public IActionResult UpdateProduct()

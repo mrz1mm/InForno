@@ -23,6 +23,7 @@
   <ItemGroup>
     <Folder Include="Views\Supplier\Ingredients\" />
     <Folder Include="Views\Supplier\Products\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>
