@@ -141,7 +141,7 @@ namespace InForno.Controllers
         // METODI - Ingredients
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddIngredient([Bind("Name, Description, IngredientImage")] Ingredient model)
+        public async Task<IActionResult> AddIngredient([Bind("Name, Description")] Ingredient model)
         {
             if (!ModelState.IsValid)
             {

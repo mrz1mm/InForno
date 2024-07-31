@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace InForno.Models
 {
@@ -13,5 +12,7 @@ namespace InForno.Models
 
         [Required]
         public string Description { get; set; }
+
+        public List<Product> Products { get; set; }
     }
 }

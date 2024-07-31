@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="AddProduct">
+        <form asp-action="AddProduct" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -34,8 +34,20 @@
             </div>
             <div class="form-group">
                 <label asp-for="ProductImage" class="control-label"></label>
-                <input asp-for="ProductImage" class="form-control" />
+                <input asp-for="ProductImage" type="file" class="form-control" />
                 <span asp-validation-for="ProductImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ingredients" class="control-label"></label>
+                <div id="ingredients-list">
+                    <div class="ingredient-item">
+                        <input name="Ingredients[0].Name" class="form-control" placeholder="Ingredient Name" />
+                        <input name="Ingredients[0].Description" class="form-control" placeholder="Ingredient Description" />
+                        <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                    </div>
+                </div>
+                <button type="button" id="add-ingredient" class="btn btn-secondary">Add Ingredient</button>
+                <span asp-validation-for="Ingredients" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -49,5 +61,28 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var ingredientIndex = 1;
+
+            $('#add-ingredient').click(function () {
+                var newIngredient = `
+                            <div class="ingredient-item">
+                                <input name="Ingredients[${ingredientIndex}].Name" class="form-control" placeholder="Ingredient Name" />
+                                <input name="Ingredients[${ingredientIndex}].Description" class="form-control" placeholder="Ingredient Description" />
+                                <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                            </div>`;
+                $('#ingredients-list').append(newIngredient);
+                ingredientIndex++;
+            });
+
+            $(document).on('click', '.remove-ingredient', function () {
+                $(this).closest('.ingredient-item').remove();
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
