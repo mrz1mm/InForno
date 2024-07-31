@@ -16,13 +16,13 @@ namespace InForno.Controllers
             _context = context;
         }
 
-        // VISTE
-        public IActionResult LoginView()
+        // CREAZIONI VISTE
+        public IActionResult Login()
         {
             return View();
         }
 
-        public IActionResult RegisterView()
+        public IActionResult Register()
         {
             return View();
         }

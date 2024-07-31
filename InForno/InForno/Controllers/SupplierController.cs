@@ -15,30 +15,30 @@ namespace InForno.Controllers
 
 
         // VISTE - Orders
-        public async Task<IActionResult> OrdersView()
+        public async Task<IActionResult> Orders()
         {
              return View();
         }
 
 
         // VISTE - Products
-        public async Task<IActionResult> ProductsView()
+        public async Task<IActionResult> Products()
         {
             var products = await _context.Products.Include(c => c.Ingredients).ToListAsync();
             return View(products);
         }
 
-        public IActionResult AddProductView()
+        public IActionResult AddProduct()
         {
             return View();
         }
 
-        public IActionResult UpdateProductView()
+        public IActionResult UpdateProduct()
         {
             return View();
         }
 
-        public IActionResult DeleteProductView()
+        public IActionResult DeleteProduct()
         {
             return View();
         }
@@ -46,19 +46,19 @@ namespace InForno.Controllers
 
         // VISTE - Ingredients
         [HttpGet]
-        public async Task<IActionResult> IngredientsView()
+        public async Task<IActionResult> Ingredients()
         {
             var ingredients = await _context.Ingredients.ToListAsync();
             return View(ingredients);
         }
 
-        public IActionResult AddIngredientView()
+        public IActionResult AddIngredient()
         {
             return View();
         }
 
         [HttpGet]
-        public async Task<IActionResult> UpdateIngredientView(int id)
+        public async Task<IActionResult> UpdateIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
             if (ingredient == null)
@@ -76,7 +76,7 @@ namespace InForno.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeleteIngredientView(int id)
+        public async Task<IActionResult> DeleteIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
             if (ingredient == null)
@@ -263,7 +263,7 @@ namespace InForno.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteIngredient(int ingredientId)
+        public async Task<IActionResult> ConfirmDeleteIngredient(int ingredientId)
         {
             if (!ModelState.IsValid)
             {
