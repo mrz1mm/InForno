@@ -6,7 +6,7 @@ namespace InForno.Models
     public class Cart
     {
         [Key]
-        public int OrderId { get; set; }
+        public int CartId { get; set; }
         public Product Product { get; set; }
         public int Quantity { get; set; }        
     }

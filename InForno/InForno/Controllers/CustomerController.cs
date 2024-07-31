@@ -1,4 +1,5 @@
 ﻿using InForno.Models;
+using InForno.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace InForno.Controllers
         // VISTE - Orders
         public async Task<IActionResult> Orders()
         {
-            var orders = _context.Orders.ToListAsync();
+            var orders = await _context.Orders.ToListAsync();
             return View();
         }
 
@@ -73,9 +74,9 @@ namespace InForno.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult RemoveProductFromCart(int ProductId, string returnUrl)
+        public async Task<IActionResult> RemoveProductFromCart(int ProductId, string returnUrl)
         {
-            var cart = GetCartFromSession();
+            var cart = await Task.Run(() => GetCartFromSession());
             var productToRemove = cart.FirstOrDefault(x => x.Product.ProductId == ProductId);
             if (productToRemove != null)
             {
@@ -86,7 +87,19 @@ namespace InForno.Controllers
                 }
             }
 
-            SaveCartToSession(cart);
+            await Task.Run(() => SaveCartToSession(cart));
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> ClearCart(string returnUrl)
+        {
+            HttpContext.Session.Remove("Cart");
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -123,9 +136,9 @@ namespace InForno.Controllers
             // Crea un nuovo ordine
             var order = new Order
             {
-                User = user,
-                Address = address
                 CartItems = cart,
+                User = user,
+                Address = address,
                 Note = note,
                 DateTime = DateTime.Now
             };
@@ -145,8 +158,5 @@ namespace InForno.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-
-
     }
 }
