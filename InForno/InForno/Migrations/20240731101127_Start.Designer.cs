@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InForno.Migrations
 {
     [DbContext(typeof(InFornoDbContext))]
-    [Migration("20240731094325_Start")]
+    [Migration("20240731101127_Start")]
     partial class Start
     {
         /// <inheritdoc />
@@ -58,10 +58,6 @@ namespace InForno.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IngredientId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

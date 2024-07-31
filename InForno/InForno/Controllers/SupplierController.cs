@@ -25,7 +25,7 @@ namespace InForno.Controllers
         public async Task<IActionResult> Products()
         {
             var products = await _context.Products.Include(c => c.Ingredients).ToListAsync();
-            return View();
+            return View(products);
         }
 
         public IActionResult AddProduct()
@@ -45,10 +45,11 @@ namespace InForno.Controllers
 
 
         // VISTE - Ingredients
+        [HttpGet]
         public async Task<IActionResult> Ingredients()
         {
             var ingredients = await _context.Ingredients.ToListAsync();
-            return View();
+            return View(ingredients);
         }
 
         public IActionResult AddIngredient()
@@ -56,18 +57,44 @@ namespace InForno.Controllers
             return View();
         }
 
-        public IActionResult UpdateIngredient() {
-            return View();
+        [HttpGet]
+        public async Task<IActionResult> UpdateIngredient(int id)
+        {
+            var ingredient = await _context.Ingredients.FindAsync(id);
+            if (ingredient == null)
+            {
+                return NotFound();
+            }
+
+            var model = new IngredientDTO
+            {
+                IngredientId = ingredient.IngredientId,
+                Name = ingredient.Name
+            };
+
+            return View(model);
         }
 
-        public IActionResult DeleteIngredient()
+        [HttpGet]
+        public async Task<IActionResult> DeleteIngredient(int id)
         {
-            return View();
+            var ingredient = await _context.Ingredients.FindAsync(id);
+            if (ingredient == null)
+            {
+                return NotFound();
+            }
+
+            var model = new IngredientDTO
+            {
+                IngredientId = ingredient.IngredientId,
+                Name = ingredient.Name
+            };
+
+            return View(model);
         }
 
 
         // METODI - Orders
-
 
         // METODI - Products
         [HttpPost]
@@ -79,20 +106,43 @@ namespace InForno.Controllers
                 return View(model);
             }
 
-            var product = new Product
+            try
             {
-                Name = model.Name,
-                Price = model.Price,
-                Description = model.Description,
-                DeliveryTime = model.DeliveryTime,
-                ProductImage = model.ProductImage,
-                Ingredients = model.Ingredients
-            };
+                var product = new Product
+                {
+                    Name = model.Name,
+                    Price = model.Price,
+                    Description = model.Description,
+                    DeliveryTime = model.DeliveryTime,
+                    ProductImage = model.ProductImage,
+                    Ingredients = new List<Ingredient>()
+                };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Products");
+                // Associa gli ingredienti al prodotto
+                if (model.Ingredients != null && model.Ingredients.Any())
+                {
+                    product.Ingredients = new List<Ingredient>();
+                    foreach (var ingredient in model.Ingredients)
+                    {
+                        var existingIngredient = await _context.Ingredients.FindAsync(ingredient.IngredientId);
+                        if (existingIngredient != null)
+                        {
+                            product.Ingredients.Add(existingIngredient);
+                        }
+                    }
+                }
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'aggiunta del prodotto.");
+                return View(model);
+            }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -103,19 +153,27 @@ namespace InForno.Controllers
                 return View(model);
             }
 
-            var product = new Product
+            try
             {
-                Name = model.Name,
-                Price = model.Price,
-                Description = model.Description,
-                DeliveryTime = model.DeliveryTime,
-                ProductImage = model.ProductImage,
-                Ingredients = model.Ingredients
-            };
+                var product = new Product
+                {
+                    Name = model.Name,
+                    Price = model.Price,
+                    Description = model.Description,
+                    DeliveryTime = model.DeliveryTime,
+                    ProductImage = model.ProductImage,
+                    Ingredients = model.Ingredients
+                };
 
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Products");
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'aggiornamento del prodotto.");
+                return View(model);
+            }
         }
 
         [HttpPost]
@@ -127,73 +185,110 @@ namespace InForno.Controllers
                 return View(model);
             }
 
-            var product = new Product
+            try
             {
-                ProductId = model.ProductId
-            };
+                var product = new Product
+                {
+                    ProductId = model.ProductId
+                };
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Products");
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'eliminazione del prodotto.");
+                return View(model);
+            }
         }
+
 
 
         // METODI - Ingredients
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddIngredient([Bind("Name, Description")] Ingredient model)
+        public async Task<IActionResult> AddIngredient([Bind("Name")] AddIngredientDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var ingredient = new Ingredient
+            try
             {
-                Name = model.Name,
-            };
+                var ingredient = new Ingredient
+                {
+                    Name = model.Name,
+                };
 
-            _context.Ingredients.Add(ingredient);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Ingredients");
+                _context.Ingredients.Add(ingredient);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Ingredients");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'aggiunta dell'ingrediente.");
+                return View(model);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateIngredient([Bind("IngredientId, Name, Description, IngredientImage")] Ingredient model)
+        public async Task<IActionResult> UpdateIngredient([Bind("IngredientId, Name")] IngredientDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var ingredient = new Ingredient
+            try
             {
-                Name = model.Name,
-            };
+                var ingredient = new Ingredient
+                {
+                    IngredientId = model.IngredientId,
+                    Name = model.Name,
+                };
 
-            _context.Ingredients.Update(ingredient);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Ingredients");
+                _context.Ingredients.Update(ingredient);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Ingredients");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'aggiornamento dell'ingrediente.");
+                return View(model);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteIngredient([Bind("IngredientId")] Ingredient model)
+        public async Task<IActionResult> DeleteIngredient([Bind("IngredientId")] IngredientDTO model)
         {
+            ModelState.Remove("Name");
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var ingredient = new Ingredient
+            try
             {
-                IngredientId = model.IngredientId
-            };
+                var ingredient = await _context.Ingredients.FindAsync(model.IngredientId);
+                if (ingredient == null)
+                {
+                    return NotFound();
+                }
 
-            _context.Ingredients.Remove(ingredient);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Ingredients");
+                _context.Ingredients.Remove(ingredient);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Ingredients");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Si è verificato un errore durante l'eliminazione dell'ingrediente.");
+                return View(model);
+            }
         }
     }
 }

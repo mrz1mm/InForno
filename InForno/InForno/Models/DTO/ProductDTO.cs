@@ -7,6 +7,6 @@
         public string Description { get; set; }
         public string DeliveryTime { get; set; }
         public byte[] ProductImage { get; set; }
-        public List<Ingredient> Ingredients { get; set; }
+        public List<IngredientDTO> Ingredients { get; set; }
     }
 }

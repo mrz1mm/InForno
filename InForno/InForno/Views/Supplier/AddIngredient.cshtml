@@ -1,4 +1,4 @@
-﻿@model InForno.Models.DTO.IngredientDTO
+﻿@model InForno.Models.DTO.AddIngredientDTO
 
 @{
     ViewData["Title"] = "AddIngredient";
@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="AddIngredient">
+        <form asp-controller="Supplier" asp-action="AddIngredient">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
