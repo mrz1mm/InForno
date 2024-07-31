@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InForno.Migrations
 {
     [DbContext(typeof(InFornoDbContext))]
-    [Migration("20240731074545_Start")]
+    [Migration("20240731094325_Start")]
     partial class Start
     {
         /// <inheritdoc />
@@ -67,12 +67,7 @@ namespace InForno.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
                     b.HasKey("IngredientId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("Ingredients");
                 });
@@ -166,6 +161,21 @@ namespace InForno.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("IngredientProduct", b =>
+                {
+                    b.Property<int>("IngredientsIngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IngredientsIngredientId", "ProductsProductId");
+
+                    b.HasIndex("ProductsProductId");
+
+                    b.ToTable("IngredientProduct");
+                });
+
             modelBuilder.Entity("InForno.Models.Cart", b =>
                 {
                     b.HasOne("InForno.Models.Order", null)
@@ -181,13 +191,6 @@ namespace InForno.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("InForno.Models.Ingredient", b =>
-                {
-                    b.HasOne("InForno.Models.Product", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("ProductId");
-                });
-
             modelBuilder.Entity("InForno.Models.Order", b =>
                 {
                     b.HasOne("InForno.Models.User", "User")
@@ -199,14 +202,24 @@ namespace InForno.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("IngredientProduct", b =>
+                {
+                    b.HasOne("InForno.Models.Ingredient", null)
+                        .WithMany()
+                        .HasForeignKey("IngredientsIngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InForno.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InForno.Models.Order", b =>
                 {
                     b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("InForno.Models.Product", b =>
-                {
-                    b.Navigation("Ingredients");
                 });
 #pragma warning restore 612, 618
         }
