@@ -151,7 +151,6 @@ namespace InForno.Controllers
             var ingredient = new Ingredient
             {
                 Name = model.Name,
-                Description = model.Description,
             };
 
             _context.Ingredients.Add(ingredient);
@@ -171,7 +170,6 @@ namespace InForno.Controllers
             var ingredient = new Ingredient
             {
                 Name = model.Name,
-                Description = model.Description,
             };
 
             _context.Ingredients.Update(ingredient);
