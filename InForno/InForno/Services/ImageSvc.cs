@@ -25,5 +25,23 @@
 
             return $"/images/{imageFile.FileName}";
         }
+
+        public Task DeleteImageAsync(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                throw new ArgumentException("URL immagine non valido");
+            }
+
+            var fileName = Path.GetFileName(imageUrl);
+            var filePath = Path.Combine(_imagePath, fileName);
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

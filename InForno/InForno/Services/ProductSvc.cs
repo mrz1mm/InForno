@@ -54,8 +54,40 @@ namespace InForno.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Product> UpdateProductAsync(Product product)
+        public async Task<Product> UpdateProductAsync(UpdateProductDTO model)
         {
+            var product = await _context.Products.Include(p => p.Ingredients).FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
+            if (product == null)
+            {
+                throw new ArgumentException("Prodotto non trovato.");
+            }
+
+            product.Name = model.Name;
+            product.Price = model.Price;
+            product.Description = model.Description;
+            product.DeliveryTime = model.DeliveryTime;
+
+            if (model.ProductImageFile != null)
+            {
+                if (!string.IsNullOrEmpty(product.ProductImageUrl))
+                {
+                    await _imageSvc.DeleteImageAsync(product.ProductImageUrl);
+                }
+                product.ProductImageUrl = await _imageSvc.SaveImageAsync(model.ProductImageFile);
+            }
+
+            product.Ingredients.Clear();
+            if (model.Ingredients != null && model.Ingredients.Any())
+            {
+                var selectedIngredients = await _ingredientSvc.GetIngredientsByIdsAsync(model.Ingredients);
+                product.Ingredients.AddRange(selectedIngredients);
+            }
+
+            if (product.DeliveryTime < TimeSpan.Zero || product.DeliveryTime >= TimeSpan.FromHours(24))
+            {
+                throw new ArgumentException("Il valore di DeliveryTime è fuori dal range accettabile.");
+            }
+
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
             return product;
