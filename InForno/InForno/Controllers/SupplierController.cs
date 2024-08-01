@@ -23,9 +23,9 @@ namespace InForno.Controllers
 
 
         // ORDERS - Views
-        public async Task<IActionResult> Orders(int supplierId)
+        public async Task<IActionResult> Orders()
         {
-            var orders = await _orderSvc.GetOrdersBySupplier(supplierId);
+            var orders = await _orderSvc.GetOrders();
             return View(orders);
         }
 

@@ -1,9 +1,7 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
-using InForno.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace InForno.Controllers
 {
@@ -20,7 +18,6 @@ namespace InForno.Controllers
             _orderSvc = orderSvc;
         }
 
-
         // CART - Views
         public IActionResult Cart()
         {
@@ -28,17 +25,17 @@ namespace InForno.Controllers
             return View(cart);
         }
 
-
         // CART - Metodi
-        public async Task<IActionResult> AddProductsToCart(int ProductId, int quantity, string returnUrl)
+        public async Task<IActionResult> AddProductsToCart(CartDTO cartDTO, string returnUrl)
         {
-            var product = await _context.Products.FindAsync(ProductId);
-            if (product == null)
+            try
             {
-                return NotFound();
+                await _cartSvc.AddProductsToCart(cartDTO);
             }
-
-            await _cartSvc.AddProductsToCart(product, quantity);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -72,19 +69,23 @@ namespace InForno.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-
-
-
         // ORDERS - Views
         public async Task<IActionResult> Orders()
         {
-            var orders = await _context.Orders.ToListAsync();
+            var orders = await _orderSvc.GetOrdersByCurrentUser();
             return View(orders);
         }
 
-
         // METODI - Orders
+        public async Task<IActionResult> GetOrderById(int orderId)
+        {
+            var order = await _orderSvc.GetOrderById(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return View(order);
+        }
         public async Task<IActionResult> CreateOrder(string returnUrl, string note, string address)
         {
             var cart = _cartSvc.GetCart();
@@ -104,12 +105,5 @@ namespace InForno.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-        public async Task<IActionResult> GetOrdersByCustomer(int customerId)
-        {
-            var orders = await _orderSvc.GetOrdersByCustomer(customerId);
-            return View(orders);
-        }
-
     }
 }

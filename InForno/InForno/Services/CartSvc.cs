@@ -1,13 +1,17 @@
 ﻿using InForno.Models;
+using InForno.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 public class CartSvc
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly InFornoDbContext _context;
 
-    public CartSvc(IHttpContextAccessor httpContextAccessor)
+    public CartSvc(IHttpContextAccessor httpContextAccessor, InFornoDbContext context)
     {
         _httpContextAccessor = httpContextAccessor;
+        _context = context;
     }
 
     private List<Cart> GetCartFromSession()
@@ -31,20 +35,26 @@ public class CartSvc
         _httpContextAccessor.HttpContext.Session.SetString("Cart", cartJson);
     }
 
-    public async Task AddProductsToCart(Product product, int quantity)
+    public async Task AddProductsToCart(CartDTO cartDTO)
     {
         var cart = GetCartFromSession();
-        var existingProduct = cart.FirstOrDefault(x => x.Product.ProductId == product.ProductId);
+        var existingProduct = cart.FirstOrDefault(x => x.Product.ProductId == cartDTO.ProductId);
         if (existingProduct != null)
         {
-            existingProduct.Quantity += quantity;
+            existingProduct.Quantity += cartDTO.Quantity;
         }
         else
         {
+            var product = await _context.Products.FindAsync(cartDTO.ProductId);
+            if (product == null)
+            {
+                throw new Exception("Product not found");
+            }
+
             cart.Add(new Cart
             {
                 Product = product,
-                Quantity = quantity
+                Quantity = cartDTO.Quantity
             });
         }
         SaveCartToSession(cart);

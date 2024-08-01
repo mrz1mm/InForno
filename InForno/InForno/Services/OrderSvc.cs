@@ -1,4 +1,5 @@
 ﻿using InForno.Models;
+using InForno.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -6,13 +7,23 @@ public class OrderSvc
 {
     private readonly InFornoDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly AuthSvc _authSvc;
 
-    public OrderSvc(InFornoDbContext context, IHttpContextAccessor httpContextAccessor)
+    public OrderSvc(InFornoDbContext context, IHttpContextAccessor httpContextAccessor, AuthSvc authSvc)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
+        _authSvc = authSvc;
     }
 
+    public async Task<List<Order>> GetOrders()
+    {
+        return await _context.Orders
+            .Include(o => o.CartItems)
+            .ThenInclude(ci => ci.Product)
+            .Include(o => o.User)
+            .ToListAsync();
+    }
 
     public async Task<Order> GetOrderById(int orderId)
     {
@@ -23,20 +34,17 @@ public class OrderSvc
             .FirstOrDefaultAsync(o => o.OrderId == orderId);
     }
 
-    public async Task<List<Order>> GetOrdersBySupplier(int supplierId)
+    public async Task<List<Order>> GetOrdersByCurrentUser()
     {
-        return await _context.Orders
-            .Include(o => o.CartItems)
-            .ThenInclude(ci => ci.Product)
-            .Where(o => o.CartItems.Any(ci => ci.Product.SupplierId == supplierId))
-            .ToListAsync();
-    }
+        var userId = _authSvc.GetCurrentUserId();
+        if (userId == null)
+        {
+            return new List<Order>();
+        }
 
-    public async Task<List<Order>> GetOrdersByCustomer(int customerId)
-    {
         return await _context.Orders
             .Include(o => o.User)
-            .Where(o => o.User.UserId == customerId)
+            .Where(o => o.User.UserId.ToString() == userId)
             .ToListAsync();
     }
 
@@ -47,7 +55,7 @@ public class OrderSvc
             return false;
         }
 
-        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = _authSvc.GetCurrentUserId();
         if (userId == null)
         {
             return false;

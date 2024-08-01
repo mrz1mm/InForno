@@ -1,6 +1,6 @@
 using InForno.Models;
-using InForno.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace InForno.Controllers
@@ -8,15 +8,37 @@ namespace InForno.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly InFornoDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, InFornoDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Catalog()
+        {
+            var products = await _context.Products.ToListAsync();
+            return View(products);
+        }
+
+        public async Task<IActionResult> Detail(int id)
+        {
+            var product = await _context.Products
+                .Include(p => p.Ingredients)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,0 +1,57 @@
+﻿@model List<InForno.Models.Cart>
+
+@{
+    ViewData["Title"] = "Carrello";
+}
+
+<h2>Carrello</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Il carrello è vuoto.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Prodotto</th>
+                <th>Quantità</th>
+                <th>Prezzo</th>
+                <th>Totale</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@(item.Quantity * item.Product.Price).ToString("C")</td>
+                    <td>
+                        <form asp-action="RemoveProductFromCart" method="post">
+                            <input type="hidden" name="ProductId" value="@item.Product.ProductId" />
+                            <button type="submit" class="btn btn-danger">Rimuovi</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right"><strong>Totale:</strong></td>
+                <td colspan="2">
+                    @Model.Sum(item => item.Quantity * item.Product.Price).ToString("C")
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <form asp-action="ClearCart" method="post">
+        <button type="submit" class="btn btn-warning">Svuota Carrello</button>
+    </form>
+
+    <a asp-action="CreateOrder" class="btn btn-success">Procedi all'Ordine</a>
+}

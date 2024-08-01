@@ -1,22 +1,19 @@
-﻿using InForno.Models;
-using InForno.Models.DTO;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using InForno.Models.DTO;
+using InForno.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace InForno.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly InFornoDbContext _context;
-        public AuthController(InFornoDbContext context)
+        private readonly AuthSvc _authSvc;
+
+        public AuthController(AuthSvc authSvc)
         {
-            _context = context;
+            _authSvc = authSvc;
         }
 
-        // CREAZIONI VISTE
+        // VIEWS
         public IActionResult Login()
         {
             return View();
@@ -38,15 +35,13 @@ namespace InForno.Controllers
                 return View(model);
             }
 
-            var user = new User
+            var success = await _authSvc.Register(model);
+            if (!success)
             {
-                Username = model.Username,
-                Password = model.Password,
-                Role = model.Role
-            };
+                TempData["error"] = "Username già esistente";
+                return View(model);
+            }
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
             return RedirectToAction("Login");
         }
 
@@ -60,25 +55,12 @@ namespace InForno.Controllers
                 return View();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == model.Username && u.Password == model.Password);
-
-            if (user == null)
+            var success = await _authSvc.Login(model);
+            if (!success)
             {
                 TempData["error"] = "Account non esistente";
                 return View();
             }
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
             TempData["Success"] = "Login effettuato con successo";
             return RedirectToAction("Index", "Home");
@@ -86,7 +68,7 @@ namespace InForno.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _authSvc.Logout();
             return RedirectToAction("Index", "Home");
         }
     }

@@ -22,7 +22,6 @@ namespace InForno
                 options.Cookie.IsEssential = true;
             });
 
-
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
@@ -30,12 +29,11 @@ namespace InForno
                 options.AccessDeniedPath = "/Home";
             });
 
-            builder.Services
-            .AddAuthorization(options =>
+            builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.Supplier, policy => policy.RequireRole("Supplier"));
                 options.AddPolicy(Policies.Customer, policy => policy.RequireRole("Customer"));
-                options.AddPolicy("SupllierOrCustomer", policy =>
+                options.AddPolicy("SupplierOrCustomer", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
                             (c.Type == ClaimTypes.Role && c.Value == "Supplier") ||
@@ -49,6 +47,7 @@ namespace InForno
 
             builder.Services.AddSingleton<ImageSvc>(new ImageSvc(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")));
             builder.Services
+                .AddScoped<AuthSvc>()
                 .AddScoped<CartSvc>()
                 .AddScoped<IngredientSvc>()
                 .AddScoped<OrderSvc>()
@@ -67,7 +66,10 @@ namespace InForno
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",
