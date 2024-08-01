@@ -11,28 +11,33 @@ namespace InForno.Controllers
         private readonly InFornoDbContext _context;
         private readonly ProductSvc _productSvc;
         private readonly IngredientSvc _ingredientSvc;
+        private readonly OrderSvc _orderSvc;
 
-        public SupplierController(InFornoDbContext context, ProductSvc productSvc, IngredientSvc ingredientSvc)
+        public SupplierController(InFornoDbContext context, ProductSvc productSvc, IngredientSvc ingredientSvc, OrderSvc orderSvc)
         {
             _context = context;
             _productSvc = productSvc;
             _ingredientSvc = ingredientSvc;
+            _orderSvc = orderSvc;
         }
 
 
-        // VISTE - Orders
-        public async Task<IActionResult> Orders()
+        // ORDERS - Views
+        public async Task<IActionResult> Orders(int supplierId)
         {
-            return View();
+            var orders = await _orderSvc.GetOrdersBySupplier(supplierId);
+            return View(orders);
         }
 
 
-        // METODI - Orders
+        // ORDERS - Metodi
 
 
 
 
-        // VISTE - Products
+
+
+        // PRODUCTS - Views
         [HttpGet]
         public async Task<IActionResult> Products()
         {
@@ -124,7 +129,7 @@ namespace InForno.Controllers
         }
 
 
-        // METODI - Products
+        // PRODUCTS - Metodi
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct([Bind("Name, Price, Description, DeliveryTime, ProductImageFile, Ingredients")] AddProductDTO model)
@@ -174,8 +179,6 @@ namespace InForno.Controllers
             }
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDeleteProduct(int productId)
@@ -205,7 +208,7 @@ namespace InForno.Controllers
 
 
 
-        // VISTE - Ingredients
+        // INGREDIENTS - Views
         [HttpGet]
         public async Task<IActionResult> Ingredients()
         {
@@ -255,7 +258,7 @@ namespace InForno.Controllers
         }
 
 
-        // METODI - Ingredients
+        // INGREDIENTS - Metodi
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddIngredient([Bind("Name")] AddIngredientDTO model)
@@ -322,6 +325,5 @@ namespace InForno.Controllers
                 return View();
             }
         }
-
     }
 }

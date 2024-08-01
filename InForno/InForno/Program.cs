@@ -49,7 +49,9 @@ namespace InForno
 
             builder.Services.AddSingleton<ImageSvc>(new ImageSvc(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")));
             builder.Services
+                .AddScoped<CartSvc>()
                 .AddScoped<IngredientSvc>()
+                .AddScoped<OrderSvc>()
                 .AddScoped<ProductSvc>();
 
             var app = builder.Build();
