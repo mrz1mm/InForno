@@ -17,17 +17,17 @@ namespace InForno.Services
             _ingredientSvc = ingredientSvc;
         }
 
-        public async Task<List<Product>> GetAllProductsAsync()
+        public async Task<List<Product>> GetAllProducts()
         {
             return await _context.Products.Include(p => p.Ingredients).ToListAsync();
         }
 
-        public async Task<Product> GetProductByIdAsync(int id)
+        public async Task<Product> GetProductById(int id)
         {
             return await _context.Products.Include(p => p.Ingredients).FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
-        public async Task AddProductAsync(AddProductDTO model)
+        public async Task AddProduct(AddProductDTO model)
         {
             var product = new Product
             {
@@ -41,7 +41,7 @@ namespace InForno.Services
 
             if (model.Ingredients != null && model.Ingredients.Any())
             {
-                var selectedIngredients = await _ingredientSvc.GetIngredientsByIdsAsync(model.Ingredients);
+                var selectedIngredients = await _ingredientSvc.GetIngredientsByIds(model.Ingredients);
                 product.Ingredients.AddRange(selectedIngredients);
             }
 
@@ -54,7 +54,7 @@ namespace InForno.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Product> UpdateProductAsync(UpdateProductDTO model)
+        public async Task<Product> UpdateProduct(UpdateProductDTO model)
         {
             var product = await _context.Products.Include(p => p.Ingredients).FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
             if (product == null)
@@ -79,7 +79,7 @@ namespace InForno.Services
             product.Ingredients.Clear();
             if (model.Ingredients != null && model.Ingredients.Any())
             {
-                var selectedIngredients = await _ingredientSvc.GetIngredientsByIdsAsync(model.Ingredients);
+                var selectedIngredients = await _ingredientSvc.GetIngredientsByIds(model.Ingredients);
                 product.Ingredients.AddRange(selectedIngredients);
             }
 
@@ -93,7 +93,7 @@ namespace InForno.Services
             return product;
         }
 
-        public async Task<bool> DeleteProductAsync(int id)
+        public async Task<bool> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)

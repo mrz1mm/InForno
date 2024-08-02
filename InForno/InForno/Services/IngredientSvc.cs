@@ -13,24 +13,24 @@ namespace InForno.Services
             _context = context;
         }
 
-        public async Task<List<Ingredient>> GetAllIngredientsAsync()
+        public async Task<List<Ingredient>> GetAllIngredients()
         {
             return await _context.Ingredients.OrderBy(i => i.Name).ToListAsync();
         }
 
-        public async Task<Ingredient> GetIngredientByIdAsync(int id)
+        public async Task<Ingredient> GetIngredientById(int id)
         {
             return await _context.Ingredients.FindAsync(id);
         }
 
-        public async Task<List<Ingredient>> GetIngredientsByIdsAsync(List<int> ingredientIds)
+        public async Task<List<Ingredient>> GetIngredientsByIds(List<int> ingredientIds)
         {
             return await _context.Ingredients
                 .Where(i => ingredientIds.Contains(i.IngredientId))
                 .ToListAsync();
         }
 
-        public async Task<Ingredient> AddIngredientAsync(AddIngredientDTO model)
+        public async Task<Ingredient> AddIngredient(AddIngredientDTO model)
         {
             var ingredient = new Ingredient
             {
@@ -43,7 +43,7 @@ namespace InForno.Services
             return ingredient;
         }
 
-        public async Task<Ingredient> UpdateIngredientAsync(UpdateIngredientDTO model)
+        public async Task<Ingredient> UpdateIngredient(UpdateIngredientDTO model)
         {
             var ingredient = await _context.Ingredients.FindAsync(model.IngredientId);
             if (ingredient == null)
@@ -59,7 +59,7 @@ namespace InForno.Services
             return ingredient;
         }
 
-        public async Task<bool> DeleteIngredientAsync(int id)
+        public async Task<bool> DeleteIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
             if (ingredient == null)

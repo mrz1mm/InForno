@@ -12,41 +12,41 @@ namespace InForno.Services
         /// Ottiene tutti gli ingredienti
         /// </summary>
         /// <returns>Lista di Ingredient</returns>
-        Task<List<Ingredient>> GetAllIngredientsAsync();
+        Task<List<Ingredient>> GetAllIngredients();
 
         /// <summary>
         /// Ottiene un ingrediente per ID
         /// </summary>
         /// <param name="id">ID dell'ingrediente</param>
         /// <returns>Ingrediente</returns>
-        Task<Ingredient> GetIngredientByIdAsync(int id);
+        Task<Ingredient> GetIngredientById(int id);
 
         /// <summary>
         /// Ottiene gli ingredienti per una lista di ID
         /// </summary>
         /// <param name="ingredientIds">Lista di ID degli ingredienti</param>
         /// <returns>Lista di Ingredient</returns>
-        Task<List<Ingredient>> GetIngredientsByIdsAsync(List<int> ingredientIds);
+        Task<List<Ingredient>> GetIngredientsByIds(List<int> ingredientIds);
 
         /// <summary>
         /// Aggiunge un nuovo ingrediente
         /// </summary>
         /// <param name="model">Dati dell'ingrediente</param>
         /// <returns>Ingrediente aggiunto</returns>
-        Task<Ingredient> AddIngredientAsync(AddIngredientDTO model);
+        Task<Ingredient> AddIngredient(AddIngredientDTO model);
 
         /// <summary>
         /// Aggiorna un ingrediente esistente
         /// </summary>
         /// <param name="model">Dati dell'ingrediente</param>
         /// <returns>Ingrediente aggiornato</returns>
-        Task<Ingredient> UpdateIngredientAsync(UpdateIngredientDTO model);
+        Task<Ingredient> UpdateIngredient(UpdateIngredientDTO model);
 
         /// <summary>
         /// Elimina un ingrediente
         /// </summary>
         /// <param name="id">ID dell'ingrediente da eliminare</param>
         /// <returns>True se l'eliminazione ha successo, altrimenti false</returns>
-        Task<bool> DeleteIngredientAsync(int id);
+        Task<bool> DeleteIngredient(int id);
     }
 }

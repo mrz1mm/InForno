@@ -29,7 +29,7 @@ public class CartSvc : ICartSvc
         return GetCartFromSession();
     }
 
-    private void SaveCartToSession(List<CartDTO> cart)
+    public void SaveCartToSession(List<CartDTO> cart)
     {
         var cartJson = JsonConvert.SerializeObject(cart);
         _httpContextAccessor.HttpContext.Session.SetString("Cart", cartJson);

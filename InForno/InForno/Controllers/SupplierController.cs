@@ -63,14 +63,14 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> Products()
         {
-            var products = await _productSvc.GetAllProductsAsync();
+            var products = await _productSvc.GetAllProducts();
             return View(products);
         }
 
         [HttpGet]
         public async Task<IActionResult> ProductDetail(int id)
         {
-            var product = await _productSvc.GetProductByIdAsync(id);
+            var product = await _productSvc.GetProductById(id);
             if (product == null)
             {
                 return NotFound();
@@ -82,7 +82,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> AddProduct()
         {
-            var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
+            var ingredients = await _ingredientSvc.GetAllIngredients();
             ViewBag.Ingredients = new SelectList(ingredients, "IngredientId", "Name");
 
             var model = new AddProductDTO();
@@ -92,7 +92,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateProduct(int id)
         {
-            var product = await _productSvc.GetProductByIdAsync(id);
+            var product = await _productSvc.GetProductById(id);
             if (product == null)
             {
                 return NotFound();
@@ -108,7 +108,7 @@ namespace InForno.Controllers
                 Ingredients = product.Ingredients.Select(i => i.IngredientId).ToList()
             };
 
-            var allIngredients = await _ingredientSvc.GetAllIngredientsAsync();
+            var allIngredients = await _ingredientSvc.GetAllIngredients();
             ViewData["Ingredients"] = allIngredients.Select(i => new SelectListItem
             {
                 Value = i.IngredientId.ToString(),
@@ -122,7 +122,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productSvc.GetProductByIdAsync(id);
+            var product = await _productSvc.GetProductById(id);
             if (product == null)
             {
                 return NotFound();
@@ -139,7 +139,7 @@ namespace InForno.Controllers
                 Ingredients = product.Ingredients.Select(i => i.IngredientId).ToList()
             };
 
-            var allIngredients = await _ingredientSvc.GetAllIngredientsAsync();
+            var allIngredients = await _ingredientSvc.GetAllIngredients();
             ViewData["Ingredients"] = allIngredients.Select(i => new SelectListItem
             {
                 Value = i.IngredientId.ToString(),
@@ -163,7 +163,7 @@ namespace InForno.Controllers
 
             try
             {
-                await _productSvc.AddProductAsync(model);
+                await _productSvc.AddProduct(model);
                 return RedirectToAction("Products");
             }
             catch (Exception ex)
@@ -179,7 +179,7 @@ namespace InForno.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var allIngredients = await _ingredientSvc.GetAllIngredientsAsync();
+                var allIngredients = await _ingredientSvc.GetAllIngredients();
                 ViewData["Ingredients"] = allIngredients.Select(i => new SelectListItem
                 {
                     Value = i.IngredientId.ToString(),
@@ -191,7 +191,7 @@ namespace InForno.Controllers
 
             try
             {
-                await _productSvc.UpdateProductAsync(model);
+                await _productSvc.UpdateProduct(model);
                 return RedirectToAction("Products");
             }
             catch (Exception ex)
@@ -212,7 +212,7 @@ namespace InForno.Controllers
 
             try
             {
-                var success = await _productSvc.DeleteProductAsync(productId);
+                var success = await _productSvc.DeleteProduct(productId);
                 if (!success)
                 {
                     return NotFound();
@@ -234,7 +234,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> Ingredients()
         {
-            var ingredients = await _ingredientSvc.GetAllIngredientsAsync();
+            var ingredients = await _ingredientSvc.GetAllIngredients();
             return View(ingredients);
         }
 
@@ -246,7 +246,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateIngredient(int id)
         {
-            var ingredient = await _ingredientSvc.GetIngredientByIdAsync(id);
+            var ingredient = await _ingredientSvc.GetIngredientById(id);
             if (ingredient == null)
             {
                 return NotFound();
@@ -264,7 +264,7 @@ namespace InForno.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
-            var ingredient = await _ingredientSvc.GetIngredientByIdAsync(id);
+            var ingredient = await _ingredientSvc.GetIngredientById(id);
             if (ingredient == null)
             {
                 return NotFound();
@@ -292,7 +292,7 @@ namespace InForno.Controllers
 
             try
             {
-                await _ingredientSvc.AddIngredientAsync(model);
+                await _ingredientSvc.AddIngredient(model);
                 return RedirectToAction("Ingredients");
             }
             catch (Exception ex)
@@ -313,7 +313,7 @@ namespace InForno.Controllers
 
             try
             {
-                await _ingredientSvc.UpdateIngredientAsync(model);
+                await _ingredientSvc.UpdateIngredient(model);
                 return RedirectToAction("Ingredients");
             }
             catch (Exception)
@@ -334,7 +334,7 @@ namespace InForno.Controllers
 
             try
             {
-                var success = await _ingredientSvc.DeleteIngredientAsync(ingredientId);
+                var success = await _ingredientSvc.DeleteIngredient(ingredientId);
                 if (!success)
                 {
                     return NotFound();

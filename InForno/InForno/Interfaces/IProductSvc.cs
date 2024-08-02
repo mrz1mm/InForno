@@ -12,34 +12,34 @@ namespace InForno.Services
         /// Ottiene tutti i prodotti
         /// </summary>
         /// <returns>Lista di Product</returns>
-        Task<List<Product>> GetAllProductsAsync();
+        Task<List<Product>> GetAllProducts();
 
         /// <summary>
         /// Ottiene un prodotto per ID
         /// </summary>
         /// <param name="id">ID del prodotto</param>
         /// <returns>Prodotto</returns>
-        Task<Product> GetProductByIdAsync(int id);
+        Task<Product> GetProductById(int id);
 
         /// <summary>
         /// Aggiunge un nuovo prodotto
         /// </summary>
         /// <param name="model">Dati del prodotto</param>
         /// <returns>Task completato</returns>
-        Task AddProductAsync(AddProductDTO model);
+        Task AddProduct(AddProductDTO model);
 
         /// <summary>
         /// Aggiorna un prodotto esistente
         /// </summary>
         /// <param name="model">Dati del prodotto</param>
         /// <returns>Prodotto aggiornato</returns>
-        Task<Product> UpdateProductAsync(UpdateProductDTO model);
+        Task<Product> UpdateProduct(UpdateProductDTO model);
 
         /// <summary>
         /// Elimina un prodotto
         /// </summary>
         /// <param name="id">ID del prodotto da eliminare</param>
         /// <returns>True se l'eliminazione ha successo, altrimenti false</returns>
-        Task<bool> DeleteProductAsync(int id);
+        Task<bool> DeleteProduct(int id);
     }
 }

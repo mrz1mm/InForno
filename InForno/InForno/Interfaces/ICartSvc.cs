@@ -20,6 +20,12 @@ namespace InForno.Services
         List<CartDTO> GetCart();
 
         /// <summary>
+        /// Salva il carrello nella sessione dell'utente.
+        /// </summary>
+        /// <param name="cart">Lista di oggetti CartDTO da salvare nella sessione.</param>
+        void SaveCartToSession(List<CartDTO> cart);
+
+        /// <summary>
         /// Aggiunge prodotti al carrello
         /// </summary>
         /// <param name="cartDTO">Dati del prodotto da aggiungere</param>
