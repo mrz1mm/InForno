@@ -1,4 +1,4 @@
-﻿@model List<InForno.Models.Cart>
+﻿@model List<InForno.Models.VM.CartVM>
 
 @{
     ViewData["Title"] = "Carrello";
@@ -26,13 +26,13 @@ else
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Product.Name</td>
+                    <td>@item.ProductName</td>
                     <td>@item.Quantity</td>
-                    <td>@item.Product.Price.ToString("C")</td>
-                    <td>@((item.Quantity * item.Product.Price).ToString("C"))</td>
+                    <td>@item.ProductPrice.ToString("C")</td>
+                    <td>@((item.ProductPrice * item.Quantity).ToString("C"))</td>
                     <td>
                         <form asp-action="RemoveProductFromCart" method="post">
-                            <input type="hidden" name="ProductId" value="@item.Product.ProductId" />
+                            <input type="hidden" name="ProductId" value="@item.ProductId" />
                             <button type="submit" class="btn btn-danger">Rimuovi</button>
                         </form>
                     </td>
@@ -42,14 +42,9 @@ else
         <tfoot>
             <tr>
                 <td colspan="3" class="text-right"><strong>Totale:</strong></td>
-                <td colspan="2">
-                    @Model.Sum(item => item.Quantity * item.Product.Price).ToString("C")
-                </td>
+                <td colspan="2">@Model.Sum(item => item.ProductPrice * item.Quantity).ToString("C")</td>
             </tr>
         </tfoot>
     </table>
-
-    <form asp-action="CheckOrder" method="get">
-        <button type="submit" class="btn btn-primary">Procedi all'ordine</button>
-    </form>
+    <a asp-action="CheckOrder" class="btn btn-success">Procedi all'ordine</a>
 }

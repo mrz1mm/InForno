@@ -1,9 +1,7 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
 using InForno.Models.VM;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace InForno.Controllers
 {
@@ -22,10 +20,34 @@ namespace InForno.Controllers
 
         // CART - Views
         [HttpGet]
-        public IActionResult Cart()
+        public async Task<IActionResult> Cart()
         {
-            var cart = _cartSvc.GetCart();
-            return View(cart);
+            var cartDTOs = _cartSvc.GetCartFromSession();
+            if (cartDTOs == null || !cartDTOs.Any())
+            {
+                return View(new List<CartVM>());
+            }
+
+            var cartVMs = new List<CartVM>();
+            foreach (var cartDTO in cartDTOs)
+            {
+                var product = await _context.Products.FindAsync(cartDTO.ProductId);
+                if (product == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Prodotto non trovato.");
+                    return View(new List<CartVM>());
+                }
+
+                cartVMs.Add(new CartVM
+                {
+                    ProductId = product.ProductId,
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    Quantity = cartDTO.Quantity
+                });
+            }
+
+            return View(cartVMs);
         }
 
         // CART - Metodi
@@ -116,6 +138,33 @@ namespace InForno.Controllers
         {
             return await Task.FromResult(View());
         }
+
+        [HttpGet]
+        public async Task<IActionResult> OrderDetails(int orderId)
+        {
+            var order = await _orderSvc.GetOrderById(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var orderDetailsVM = new OrderDetailsVM
+            {
+                OrderId = order.OrderId,
+                OrderDate = order.DateTime,
+                Address = order.Address,
+                Note = order.Note,
+                Items = order.CartItems.Select(ci => new OrderItemVM
+                {
+                    ProductName = ci.Product.Name,
+                    ProductPrice = ci.Product.Price,
+                    Quantity = ci.Quantity
+                }).ToList()
+            };
+
+            return View(orderDetailsVM);
+        }
+
 
         // METODI - Orders
         [HttpGet]
