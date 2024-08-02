@@ -1,11 +1,13 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
 using InForno.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InForno.Controllers
 {
+    [Authorize(Policy = "Supplier")]
     public class SupplierController : Controller
     {
         private readonly InFornoDbContext _context;
@@ -23,6 +25,7 @@ namespace InForno.Controllers
 
 
         // ORDERS - Views
+        [HttpGet]
         public async Task<IActionResult> Orders()
         {
             var orders = await _orderSvc.GetOrders();
@@ -31,6 +34,25 @@ namespace InForno.Controllers
 
 
         // ORDERS - Metodi
+        [HttpPost]
+        public async Task<IActionResult> ToggleIsPaid(int id)
+        {
+            try
+            {
+                var order = await _orderSvc.GetOrderById(id);
+                if (order == null)
+                {
+                    return Json(new { success = false, message = "Ordine non trovato" });
+                }
+
+                await _orderSvc.ToggleIsPaid(id);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
 

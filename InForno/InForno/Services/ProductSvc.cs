@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InForno.Services
 {
-    public class ProductSvc
+    public class ProductSvc : IProductSvc
     {
         private readonly InFornoDbContext _context;
         private readonly ImageSvc _imageSvc;

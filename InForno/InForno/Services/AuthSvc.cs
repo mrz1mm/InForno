@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace InForno.Services
 {
-    public class AuthSvc
+    public class AuthSvc : IAuthSvc
     {
         private readonly InFornoDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;

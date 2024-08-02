@@ -2,9 +2,7 @@
 using InForno.Models.DTO;
 using InForno.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-
-public class OrderSvc
+public class OrderSvc : IOrderSvc
 {
     private readonly InFornoDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -49,7 +47,7 @@ public class OrderSvc
             .ToListAsync();
     }
 
-    public async Task<bool> CreateOrder(OrderDTO orderDTO)
+    public async Task<bool> CreateOrder(AddOrderDTO orderDTO)
     {
         if (orderDTO.CartItems == null || !orderDTO.CartItems.Any())
         {
@@ -93,5 +91,16 @@ public class OrderSvc
         var success = await _context.SaveChangesAsync() > 0;
 
         return success;
+    }
+
+    public async Task ToggleIsPaid(int orderId)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order == null)
+        {
+            throw new Exception("Ordine non trovato");
+        }
+        order.IsPaid = !order.IsPaid;
+        await _context.SaveChangesAsync();
     }
 }

@@ -1,0 +1,132 @@
+﻿@model List<InForno.Models.Order>
+
+@{
+    ViewData["Title"] = "Ordini Fornitore";
+}
+
+<h2>Ordini Fornitore</h2>
+
+<div>
+    <label for="filterDate">Filtra per data:</label>
+    <select id="filterDate" class="form-control" onchange="filterOrders()">
+        <option value="">Tutti gli ordini</option>
+        @foreach (var date in Model.Select(o => o.DateTime.Date).Distinct())
+        {
+            <option value="@date.ToString("yyyy-MM-dd")">@date.ToString("dd/MM/yyyy")</option>
+        }
+    </select>
+</div>
+
+<div id="orderSummary">
+    <h4>Totale ordini evasi: <span id="totalOrders">@Model.Count(o => o.IsPaid)</span></h4>
+    <h4>Totale incassato: <span id="totalRevenue">@Model.Where(o => o.IsPaid).Sum(o => o.CartItems.Sum(ci => ci.Product.Price * ci.Quantity)).ToString("C")</span></h4>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Indirizzo</th>
+            <th>Note</th>
+            <th>Totale Ordine</th>
+            <th>Pagato</th>
+            <th>Dettagli</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            var totalOrderPrice = order.CartItems.Sum(ci => ci.Product.Price * ci.Quantity);
+            <tr>
+                <td>@order.DateTime.ToString("dd/MM/yyyy")</td>
+                <td>@order.Address</td>
+                <td>@order.Note</td>
+                <td class="order-price">@totalOrderPrice.ToString("C")</td>
+                <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input paymentStatus" type="checkbox" role="switch" data-order-id="@order.OrderId" @(order.IsPaid ? "checked" : "") />
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-info" href="@Url.Action("OrderDetails", "Customer", new { orderId = order.OrderId })">
+                        Mostra Dettagli
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function filterOrders() {
+            var selectedDate = document.getElementById("filterDate").value;
+            var orders = document.querySelectorAll("tbody tr");
+            var totalOrders = 0;
+            var totalRevenue = 0;
+
+            orders.forEach(function (order) {
+                var orderDate = order.querySelector("td:nth-child(1)").innerText;
+                var orderDateFormatted = new Date(orderDate.split('/').reverse().join('-')).toISOString().split('T')[0];
+                if (selectedDate === "" || orderDateFormatted === selectedDate) {
+                    order.style.display = "table-row";
+                    if (order.querySelector("input[type='checkbox']").checked) {
+                        totalOrders++;
+                        var orderPrice = parseFloat(order.querySelector(".order-price").innerText.replace("€", "").replace(",", "."));
+                        totalRevenue += orderPrice;
+                    }
+                } else {
+                    order.style.display = "none";
+                }
+            });
+
+            document.getElementById("totalOrders").innerText = totalOrders;
+            document.getElementById("totalRevenue").innerText = totalRevenue.toFixed(2) + "€";
+        }
+
+        function updateTotals() {
+            var orders = document.querySelectorAll("tbody tr");
+            var totalOrders = 0;
+            var totalRevenue = 0;
+
+            orders.forEach(function (order) {
+                if (order.querySelector("input[type='checkbox']").checked) {
+                    totalOrders++;
+                    var orderPrice = parseFloat(order.querySelector(".order-price").innerText.replace("€", "").replace(",", "."));
+                    totalRevenue += orderPrice;
+                }
+            });
+
+            document.getElementById("totalOrders").innerText = totalOrders;
+            document.getElementById("totalRevenue").innerText = totalRevenue.toFixed(2) + "€";
+        }
+
+        $(document).ready(function () {
+            $('.paymentStatus').click(function () {
+                var checkbox = $(this);
+                var orderId = checkbox.data('order-id');
+                var isPaid = checkbox.is(':checked');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleIsPaid", "Supplier")',
+                    type: 'POST',
+                    data: { id: orderId },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log('Stato di pagamento aggiornato con successo');
+                            updateTotals();
+                        } else {
+                            alert('Errore: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Errore AJAX:', status, error);
+                        alert('Si è verificato un errore durante l\'aggiornamento dello stato di pagamento.');
+                    }
+                });
+            });
+
+            filterOrders();
+        });
+    </script>
+}

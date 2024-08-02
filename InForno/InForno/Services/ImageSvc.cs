@@ -1,6 +1,6 @@
 ﻿namespace InForno.Services
 {
-    public class ImageSvc
+    public class ImageSvc : IImageSvc
     {
         private readonly string _imagePath;
 

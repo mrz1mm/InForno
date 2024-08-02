@@ -7,7 +7,6 @@
 <h2>Dettagli Ordine</h2>
 
 <div>
-    <h4>Ordine #@Model.OrderId</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">Data Ordine</dt>
@@ -38,7 +37,7 @@
                 <td>@item.ProductName</td>
                 <td>@item.Quantity</td>
                 <td>@item.ProductPrice.ToString("C")</td>
-                <td>@(item.ProductPrice * item.Quantity).ToString("C")</td>
+                <td>@((item.ProductPrice * item.Quantity).ToString("C"))</td>
             </tr>
         }
     </tbody>

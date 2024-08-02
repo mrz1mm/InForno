@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace InForno.Models
 {
@@ -17,8 +16,10 @@ namespace InForno.Models
         [Required]
         public string Address { get; set; }
 
-        public string Note { get; set; }
+        public string Note { get; set; } = "N/D";
 
         public DateTime DateTime { get; set; } = DateTime.Now;
+
+        public bool IsPaid { get; set; } = false;
     }
 }

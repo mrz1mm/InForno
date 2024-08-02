@@ -1,8 +1,9 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
+using InForno.Services;
 using Newtonsoft.Json;
 
-public class CartSvc
+public class CartSvc : ICartSvc
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly InFornoDbContext _context;

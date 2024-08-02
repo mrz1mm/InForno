@@ -1,10 +1,12 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
 using InForno.Models.VM;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InForno.Controllers
 {
+    [Authorize(Policy = "Customer")]
     public class CustomerController : Controller
     {
         private readonly InFornoDbContext _context;
@@ -139,6 +141,7 @@ namespace InForno.Controllers
             return await Task.FromResult(View());
         }
 
+        [Authorize(Policy = "SupplierOrCustomer")]
         [HttpGet]
         public async Task<IActionResult> OrderDetails(int orderId)
         {
@@ -179,7 +182,7 @@ namespace InForno.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOrder(string Address, string Note)
+        public async Task<IActionResult> AddOrder(PreAddOrderDTO preAddOrderDTO)
         {
             var cartDTOs = _cartSvc.GetCartFromSession();
             if (cartDTOs == null || !cartDTOs.Any())
@@ -205,17 +208,18 @@ namespace InForno.Controllers
                 });
             }
 
-            var orderDTO = new OrderDTO
-            {
-                CartItems = cartItems,
-                Address = Address,
-                Note = Note
-            };
-
             if (!ModelState.IsValid)
             {
                 return View("CheckOrder", cartItems);
             }
+
+            var orderDTO = new AddOrderDTO
+            {
+                CartItems = cartItems,
+                Address = preAddOrderDTO.Address,
+                Note = preAddOrderDTO.Note
+            };
+
 
             var success = await _orderSvc.CreateOrder(orderDTO);
 

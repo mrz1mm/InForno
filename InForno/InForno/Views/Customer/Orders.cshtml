@@ -16,9 +16,6 @@ else
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model[0].OrderId)
-                </th>
-                <th>
                     @Html.DisplayNameFor(model => model[0].DateTime)
                 </th>
                 <th>
@@ -35,9 +32,6 @@ else
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => order.OrderId)
-                    </td>
-                    <td>
                         @Html.DisplayFor(modelItem => order.DateTime)
                     </td>
                     <td>
@@ -47,7 +41,7 @@ else
                         @Html.DisplayFor(modelItem => order.Note)
                     </td>
                     <td>
-                        <a asp-action="GetOrderById" asp-route-orderId="@order.OrderId" class="btn btn-info">Dettagli</a>
+                        <a asp-action="OrderDetails" asp-route-orderId="@order.OrderId" class="btn btn-info">Dettagli</a>
                     </td>
                 </tr>
             }

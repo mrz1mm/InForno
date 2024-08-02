@@ -47,11 +47,11 @@ namespace InForno
 
             builder.Services.AddSingleton<ImageSvc>(new ImageSvc(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")));
             builder.Services
-                .AddScoped<AuthSvc>()
-                .AddScoped<CartSvc>()
-                .AddScoped<IngredientSvc>()
-                .AddScoped<OrderSvc>()
-                .AddScoped<ProductSvc>();
+            .AddScoped<IAuthSvc, AuthSvc>()
+            .AddScoped<ICartSvc, CartSvc>()
+            .AddScoped<IIngredientSvc, IngredientSvc>()
+            .AddScoped<IOrderSvc, OrderSvc>()
+            .AddScoped<IProductSvc, ProductSvc>();
 
             var app = builder.Build();
 
