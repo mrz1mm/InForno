@@ -1,4 +1,5 @@
 ﻿using InForno.Models;
+using InForno.Models.DTO;
 using InForno.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -48,9 +49,9 @@ public class OrderSvc
             .ToListAsync();
     }
 
-    public async Task<bool> CreateOrder(List<Cart> cart, string note, string address)
+    public async Task<bool> CreateOrder(OrderDTO orderDTO)
     {
-        if (cart == null || !cart.Any())
+        if (orderDTO.CartItems == null || !orderDTO.CartItems.Any())
         {
             return false;
         }
@@ -69,16 +70,28 @@ public class OrderSvc
 
         var order = new Order
         {
-            CartItems = cart,
+            CartItems = new List<Cart>(),
             User = user,
-            Address = address,
-            Note = note,
+            Address = orderDTO.Address,
+            Note = orderDTO.Note,
             DateTime = DateTime.Now
         };
 
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
+        foreach (var item in orderDTO.CartItems)
+        {
+            var cartItem = new Cart
+            {
+                Product = item.Product,
+                Quantity = item.Quantity
+            };
+            order.CartItems.Add(cartItem);
+            _context.Carts.Add(cartItem);
+        }
 
-        return true;
+        _context.Orders.Add(order);
+
+        var success = await _context.SaveChangesAsync() > 0;
+
+        return success;
     }
 }

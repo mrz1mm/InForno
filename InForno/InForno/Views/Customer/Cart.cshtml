@@ -29,7 +29,7 @@ else
                     <td>@item.Product.Name</td>
                     <td>@item.Quantity</td>
                     <td>@item.Product.Price.ToString("C")</td>
-                    <td>@(item.Quantity * item.Product.Price).ToString("C")</td>
+                    <td>@((item.Quantity * item.Product.Price).ToString("C"))</td>
                     <td>
                         <form asp-action="RemoveProductFromCart" method="post">
                             <input type="hidden" name="ProductId" value="@item.Product.ProductId" />
@@ -49,9 +49,7 @@ else
         </tfoot>
     </table>
 
-    <form asp-action="ClearCart" method="post">
-        <button type="submit" class="btn btn-warning">Svuota Carrello</button>
+    <form asp-action="CheckOrder" method="get">
+        <button type="submit" class="btn btn-primary">Procedi all'ordine</button>
     </form>
-
-    <a asp-action="CreateOrder" class="btn btn-success">Procedi all'Ordine</a>
 }

@@ -1,7 +1,9 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
+using InForno.Models.VM;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace InForno.Controllers
 {
@@ -19,6 +21,7 @@ namespace InForno.Controllers
         }
 
         // CART - Views
+        [HttpGet]
         public IActionResult Cart()
         {
             var cart = _cartSvc.GetCart();
@@ -26,6 +29,7 @@ namespace InForno.Controllers
         }
 
         // CART - Metodi
+        [HttpPost]
         public async Task<IActionResult> AddProductsToCart(CartDTO cartDTO, string returnUrl)
         {
             try
@@ -42,7 +46,7 @@ namespace InForno.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Catalog", "Home");
         }
 
         public async Task<IActionResult> RemoveProductFromCart(int ProductId, string returnUrl)
@@ -54,7 +58,7 @@ namespace InForno.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Cart", "Customer");
         }
 
         public IActionResult ClearCart(string returnUrl)
@@ -70,13 +74,51 @@ namespace InForno.Controllers
         }
 
         // ORDERS - Views
+        [HttpGet]
         public async Task<IActionResult> Orders()
         {
             var orders = await _orderSvc.GetOrdersByCurrentUser();
             return View(orders);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CheckOrder()
+        {
+            var cartDTOs = _cartSvc.GetCartFromSession();
+            if (cartDTOs == null || !cartDTOs.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Il carrello è vuoto.");
+                return RedirectToAction("Cart");
+            }
+
+            var cartVM = new List<CheckOrderVM>();
+            foreach (var cartDTO in cartDTOs)
+            {
+                var product = await _context.Products.FindAsync(cartDTO.ProductId);
+                if (product == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Prodotto non trovato.");
+                    return RedirectToAction("Cart");
+                }
+
+                cartVM.Add(new CheckOrderVM
+                {
+                    ProductName = product.Name,
+                    ProductPrice = product.Price,
+                    Quantity = cartDTO.Quantity
+                });
+            }
+
+            return View(cartVM);
+        }
+
+        public async Task<IActionResult> OrderConfirmed()
+        {
+            return await Task.FromResult(View());
+        }
+
         // METODI - Orders
+        [HttpGet]
         public async Task<IActionResult> GetOrderById(int orderId)
         {
             var order = await _orderSvc.GetOrderById(orderId);
@@ -86,10 +128,47 @@ namespace InForno.Controllers
             }
             return View(order);
         }
-        public async Task<IActionResult> CreateOrder(string returnUrl, string note, string address)
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrder(string Address, string Note)
         {
-            var cart = _cartSvc.GetCart();
-            var success = await _orderSvc.CreateOrder(cart, note, address);
+            var cartDTOs = _cartSvc.GetCartFromSession();
+            if (cartDTOs == null || !cartDTOs.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Il carrello è vuoto.");
+                return RedirectToAction("CheckOrder");
+            }
+
+            var cartItems = new List<Cart>();
+            foreach (var cartDTO in cartDTOs)
+            {
+                var product = await _context.Products.FindAsync(cartDTO.ProductId);
+                if (product == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Prodotto non trovato.");
+                    return RedirectToAction("CheckOrder");
+                }
+
+                cartItems.Add(new Cart
+                {
+                    Product = product,
+                    Quantity = cartDTO.Quantity
+                });
+            }
+
+            var orderDTO = new OrderDTO
+            {
+                CartItems = cartItems,
+                Address = Address,
+                Note = Note
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View("CheckOrder", cartItems);
+            }
+
+            var success = await _orderSvc.CreateOrder(orderDTO);
 
             if (!success)
             {
@@ -97,13 +176,7 @@ namespace InForno.Controllers
             }
 
             _cartSvc.ClearCart();
-
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("OrderConfirmed");
         }
     }
 }

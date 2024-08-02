@@ -1,6 +1,5 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 public class CartSvc
@@ -14,22 +13,22 @@ public class CartSvc
         _context = context;
     }
 
-    private List<Cart> GetCartFromSession()
+    public List<CartDTO> GetCartFromSession()
     {
         var cartJson = _httpContextAccessor.HttpContext.Session.GetString("Cart");
         if (string.IsNullOrEmpty(cartJson))
         {
-            return new List<Cart>();
+            return new List<CartDTO>();
         }
-        return JsonConvert.DeserializeObject<List<Cart>>(cartJson);
+        return JsonConvert.DeserializeObject<List<CartDTO>>(cartJson);
     }
 
-    public List<Cart> GetCart()
+    public List<CartDTO> GetCart()
     {
         return GetCartFromSession();
     }
 
-    private void SaveCartToSession(List<Cart> cart)
+    private void SaveCartToSession(List<CartDTO> cart)
     {
         var cartJson = JsonConvert.SerializeObject(cart);
         _httpContextAccessor.HttpContext.Session.SetString("Cart", cartJson);
@@ -38,7 +37,7 @@ public class CartSvc
     public async Task AddProductsToCart(CartDTO cartDTO)
     {
         var cart = GetCartFromSession();
-        var existingProduct = cart.FirstOrDefault(x => x.Product.ProductId == cartDTO.ProductId);
+        var existingProduct = cart.FirstOrDefault(x => x.ProductId == cartDTO.ProductId);
         if (existingProduct != null)
         {
             existingProduct.Quantity += cartDTO.Quantity;
@@ -51,9 +50,9 @@ public class CartSvc
                 throw new Exception("Product not found");
             }
 
-            cart.Add(new Cart
+            cart.Add(new CartDTO
             {
-                Product = product,
+                ProductId = cartDTO.ProductId,
                 Quantity = cartDTO.Quantity
             });
         }
@@ -63,7 +62,7 @@ public class CartSvc
     public async Task RemoveProductFromCart(int productId)
     {
         var cart = GetCartFromSession();
-        var productToRemove = cart.FirstOrDefault(x => x.Product.ProductId == productId);
+        var productToRemove = cart.FirstOrDefault(x => x.ProductId == productId);
         if (productToRemove != null)
         {
             productToRemove.Quantity -= 1;

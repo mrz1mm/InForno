@@ -7,7 +7,12 @@ namespace InForno.Models
     {
         [Key]
         public int CartId { get; set; }
+
+        [Required]
         public Product Product { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "La quantità deve essere almeno 1.")]
         public int Quantity { get; set; }        
     }
 }

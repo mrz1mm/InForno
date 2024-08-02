@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Catalogo";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
 }
 
 <h2>Catalogo Prodotti</h2>
@@ -18,9 +20,10 @@
                     <h5 class="card-title">@product.Name</h5>
                     <p class="card-text">@product.Description</p>
                     <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
-                    <form asp-action="AddProductsToCart" method="post">
+                    <form asp-controller="Customer" asp-action="AddProductsToCart" method="post">
                         <input type="hidden" name="ProductId" value="@product.ProductId" />
                         <input type="hidden" name="Quantity" value="1" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
                         <button type="submit" class="btn btn-primary">Aggiungi al Carrello</button>
                     </form>
                 </div>

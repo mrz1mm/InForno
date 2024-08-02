@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Dettagli Prodotto";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
 }
 
 <h1>Dettagli Prodotto</h1>
@@ -54,10 +56,10 @@
     </dl>
 </div>
 <div>
-    <form asp-action="AddProductsToCart" method="post">
+    <form asp-controller="Customer" asp-action="AddProductsToCart" method="post">
         <input type="hidden" name="ProductId" value="@Model.ProductId" />
         <input type="hidden" name="Quantity" value="1" />
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
         <button type="submit" class="btn btn-primary">Aggiungi al Carrello</button>
     </form>
-    <a asp-action="Catalog">Torna al Catalogo</a>
 </div>
