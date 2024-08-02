@@ -7,9 +7,9 @@ namespace InForno.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly AuthSvc _authSvc;
+        private readonly IAuthSvc _authSvc;
 
-        public AuthController(AuthSvc authSvc)
+        public AuthController(IAuthSvc authSvc)
         {
             _authSvc = authSvc;
         }

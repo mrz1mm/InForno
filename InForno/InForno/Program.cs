@@ -2,7 +2,6 @@ using InForno.Models;
 using InForno.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
 namespace InForno
@@ -27,7 +26,7 @@ namespace InForno
             .AddCookie(options =>
             {
                 options.LoginPath = "/Auth/Login";
-                options.AccessDeniedPath = "/Home";
+                options.AccessDeniedPath = "/Auth/Login";
             });
 
             builder.Services.AddAuthorization(options =>
@@ -37,8 +36,7 @@ namespace InForno
                 options.AddPolicy("SupplierOrCustomer", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            (c.Type == ClaimTypes.Role && c.Value == "Supplier") ||
-                            (c.Type == ClaimTypes.Role && c.Value == "Customer"))));
+                            (c.Type == ClaimTypes.Role && (c.Value == "Supplier" || c.Value == "Customer")))));
             });
 
             builder.Services.AddDbContext<InFornoDbContext>(options =>

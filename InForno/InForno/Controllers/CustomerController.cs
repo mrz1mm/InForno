@@ -1,6 +1,7 @@
 ﻿using InForno.Models;
 using InForno.Models.DTO;
 using InForno.Models.VM;
+using InForno.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,10 @@ namespace InForno.Controllers
     public class CustomerController : Controller
     {
         private readonly InFornoDbContext _context;
-        private readonly CartSvc _cartSvc;
-        private readonly OrderSvc _orderSvc;
+        private readonly ICartSvc _cartSvc;
+        private readonly IOrderSvc _orderSvc;
 
-        public CustomerController(InFornoDbContext context, CartSvc cartSvc, OrderSvc orderSvc)
+        public CustomerController(InFornoDbContext context, ICartSvc cartSvc, IOrderSvc orderSvc)
         {
             _context = context;
             _cartSvc = cartSvc;

@@ -11,11 +11,11 @@ namespace InForno.Controllers
     public class SupplierController : Controller
     {
         private readonly InFornoDbContext _context;
-        private readonly ProductSvc _productSvc;
-        private readonly IngredientSvc _ingredientSvc;
-        private readonly OrderSvc _orderSvc;
+        private readonly IProductSvc _productSvc;
+        private readonly IIngredientSvc _ingredientSvc;
+        private readonly IOrderSvc _orderSvc;
 
-        public SupplierController(InFornoDbContext context, ProductSvc productSvc, IngredientSvc ingredientSvc, OrderSvc orderSvc)
+        public SupplierController(InFornoDbContext context, IProductSvc productSvc, IIngredientSvc ingredientSvc, IOrderSvc orderSvc)
         {
             _context = context;
             _productSvc = productSvc;
