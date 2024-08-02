@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InForno.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
     <header>
@@ -19,60 +21,62 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Cart">Cart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Orders">Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Orders">Orders</a>
-                        </li>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Auth
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Ingredients
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Ingredients">Ingredients</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddIngredient">AddIngredient</a></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Products
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Products">Products</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="AddProduct">AddProduct</a></li>
-                            </ul>
-                        </div>
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Catalog">Catalogo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Customer" asp-action="Cart">Carrello</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Customer" asp-action="Orders">I miei ordini</a>
+                            </li>
+                        }
 
+                        @if (User.IsInRole("Supplier"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Supplier" asp-action="Orders">I miei ordini</a>
+                            </li>
 
-
-
-
-
-                        <li class="nav-item">
-                            
-                        </li>
-                        <li class="nav-item">
-                            
-                        </li>
-
+                            <div class="dropdown">
+                                <button class="btn btn-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Ingredienti
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link text-dark" asp-controller="Supplier" asp-action="Ingredients">Ingredienti</a></li>
+                                    <li><a class="nav-link text-dark" asp-controller="Supplier" asp-action="AddIngredient">Aggiungi ingrediente</a></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Prodotti
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link text-dark" asp-controller="Supplier" asp-action="Products">Prodotti</a></li>
+                                    <li><a class="nav-link text-dark" asp-controller="Supplier" asp-action="AddProduct">Aggiungi un prodotto</a></li>
+                                </ul>
+                            </div>
+                        }
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Autenticazione
+                    </button>
+                    <ul class="dropdown-menu">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li><a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a></li>
+                        }
+                        else
+                        {
+                            <li><a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a></li>
+                            <li><a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Registrati</a></li>
+                        }
                     </ul>
                 </div>
+                </ul>
             </div>
         </nav>
     </header>

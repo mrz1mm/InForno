@@ -26,7 +26,7 @@ namespace InForno
             .AddCookie(options =>
             {
                 options.LoginPath = "/Auth/Login";
-                options.AccessDeniedPath = "/Auth/Login";
+                options.AccessDeniedPath = "/Home/Index";
             });
 
             builder.Services.AddAuthorization(options =>

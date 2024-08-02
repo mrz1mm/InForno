@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InForno.Controllers
 {
-    [Authorize(Policy = "Customer")]
+    [Authorize(Policy = Policies.Customer)]
     public class CustomerController : Controller
     {
         private readonly InFornoDbContext _context;
@@ -142,7 +142,7 @@ namespace InForno.Controllers
             return await Task.FromResult(View());
         }
 
-        [Authorize(Policy = "SupplierOrCustomer")]
+        [Authorize(Policy = Policies.SupplierOrCustomer)]
         [HttpGet]
         public async Task<IActionResult> OrderDetails(int orderId)
         {

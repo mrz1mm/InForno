@@ -4,7 +4,7 @@
     ViewData["Title"] = "Ingredients";
 }
 
-<h1>Ingredients</h1>
+<h1>Ingredienti</h1>
 
 @if (!Model.Any())
 {
@@ -15,10 +15,8 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th></th>
+                <th>Nome</th>
+                <th>Azioni</th>
             </tr>
         </thead>
         <tbody>
@@ -29,8 +27,8 @@ else
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        <a asp-action="UpdateIngredient" asp-route-id="@item.IngredientId">Update  |</a>
-                        <a asp-action="DeleteIngredient" asp-route-id="@item.IngredientId">Delete</a>
+                        <a asp-action="UpdateIngredient" asp-route-id="@item.IngredientId" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                        <a asp-action="DeleteIngredient" asp-route-id="@item.IngredientId" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
             }

@@ -1,4 +1,5 @@
 using InForno.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -21,12 +22,14 @@ namespace InForno.Controllers
             return View();
         }
 
+        [Authorize(Policy = Policies.Customer)]
         public async Task<IActionResult> Catalog()
         {
             var products = await _context.Products.ToListAsync();
             return View(products);
         }
 
+        [Authorize(Policy = Policies.Customer)]
         public async Task<IActionResult> Detail(int id)
         {
             var product = await _context.Products

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InForno.Controllers
 {
-    [Authorize(Policy = "Supplier")]
+    [Authorize(Policy = Policies.Supplier)]
     public class SupplierController : Controller
     {
         private readonly InFornoDbContext _context;

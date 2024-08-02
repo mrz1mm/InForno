@@ -4,42 +4,40 @@
     ViewData["Title"] = "AddProduct";
 }
 
-<h1>AddProduct</h1>
-
-<h4>ProductDTO</h4>
+<h1>Aggiungi un nuovo prodotto</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="AddProduct" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Nome</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
+                <label asp-for="Price" class="control-label">Prezzo</label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="control-label">Descrizione</label>
                 <textarea asp-for="Description" class="form-control" rows="5"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DeliveryTime" class="control-label"></label>
+                <label asp-for="DeliveryTime" class="control-label">Tempo di consegna</label>
                 <input asp-for="DeliveryTime" type="time" class="form-control" value="00:00" />
                 <span asp-validation-for="DeliveryTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProductImageFile" class="control-label"></label>
+                <label asp-for="ProductImageFile" class="control-label">Immagine</label>
                 <input asp-for="ProductImageFile" type="file" class="form-control" />
                 <span asp-validation-for="ProductImageFile" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label class="control-label">Ingredients</label>
+                <label class="control-label">Ingredienti</label>
                 @if (ViewBag.Ingredients != null)
                 {
                     @foreach (var ingredient in ViewBag.Ingredients)
@@ -61,7 +59,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Indietro</a>
 </div>
 
 @section Scripts {

@@ -28,6 +28,7 @@
             <th>Data</th>
             <th>Indirizzo</th>
             <th>Note</th>
+            <th>Prodotti</th>
             <th>Totale Ordine</th>
             <th>Pagato</th>
             <th>Dettagli</th>
@@ -41,6 +42,14 @@
                 <td>@order.DateTime.ToString("dd/MM/yyyy")</td>
                 <td>@order.Address</td>
                 <td>@order.Note</td>
+                <td>
+                    <ul>
+                        @foreach (var cartItem in order.CartItems)
+                        {
+                            <li>@cartItem.Product.Name x @cartItem.Quantity</li>
+                        }
+                    </ul>
+                </td>
                 <td class="order-price">@totalOrderPrice.ToString("C")</td>
                 <td>
                     <div class="form-check form-switch">
@@ -48,8 +57,8 @@
                     </div>
                 </td>
                 <td>
-                    <a class="btn btn-info" href="@Url.Action("OrderDetails", "Customer", new { orderId = order.OrderId })">
-                        Mostra Dettagli
+                    <a asp-action="OrderDetails" asp-controller="Customer" asp-route-orderId="@order.OrderId" class="btn btn-info btn-sm">
+                        <i class="fas fa-info-circle"></i>
                     </a>
                 </td>
             </tr>
