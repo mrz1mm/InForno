@@ -6,9 +6,9 @@ public class OrderSvc : IOrderSvc
 {
     private readonly InFornoDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly AuthSvc _authSvc;
+    private readonly IAuthSvc _authSvc;
 
-    public OrderSvc(InFornoDbContext context, IHttpContextAccessor httpContextAccessor, AuthSvc authSvc)
+    public OrderSvc(InFornoDbContext context, IHttpContextAccessor httpContextAccessor, IAuthSvc authSvc)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;

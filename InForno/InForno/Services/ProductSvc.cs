@@ -7,10 +7,10 @@ namespace InForno.Services
     public class ProductSvc : IProductSvc
     {
         private readonly InFornoDbContext _context;
-        private readonly ImageSvc _imageSvc;
-        private readonly IngredientSvc _ingredientSvc;
+        private readonly IImageSvc _imageSvc;
+        private readonly IIngredientSvc _ingredientSvc;
 
-        public ProductSvc(InFornoDbContext context, ImageSvc imageSvc, IngredientSvc ingredientSvc)
+        public ProductSvc(InFornoDbContext context, IImageSvc imageSvc, IIngredientSvc ingredientSvc)
         {
             _context = context;
             _imageSvc = imageSvc;
